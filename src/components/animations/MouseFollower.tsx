@@ -1,13 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 const MouseFollower: React.FC = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isVisible, setIsVisible] = useState(false);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Don't render on mobile devices to improve performance
+  if (isMobile) return null;
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isVisible) setIsVisible(true);
+      // Throttle updates for better performance
+      requestAnimationFrame(() => {
+        setPosition({ x: e.clientX, y: e.clientY });
+        if (!isVisible) setIsVisible(true);
+      });
     };
 
     const handleMouseLeave = () => {
@@ -30,6 +38,7 @@ const MouseFollower: React.FC = () => {
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: "translate(-50%, -50%)",
+        willChange: "transform", // Optimize for animations
       }}
     >
       <div className="relative">

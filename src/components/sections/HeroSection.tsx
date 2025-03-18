@@ -46,8 +46,19 @@ const HeroSection = ({
     };
     sequence();
 
-    // Mouse trail effect for hero section
+    // Check if we're on mobile - don't add mouse effects on mobile
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) return;
+
+    // Mouse trail effect for hero section - desktop only
+    let lastTime = 0;
+    const throttleDelay = 50; // ms between updates
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastTime < throttleDelay) return;
+      lastTime = now;
+
       if (!heroRef.current || !cursorRef.current) return;
 
       const { clientX, clientY } = e;
@@ -62,20 +73,24 @@ const HeroSection = ({
         duration: 0.3,
       });
 
-      // Create ripple effect
-      const ripple = document.createElement("div");
-      ripple.className =
-        "absolute w-4 h-4 bg-blue-500/20 rounded-full pointer-events-none";
-      ripple.style.left = `${x}px`;
-      ripple.style.top = `${y}px`;
-      heroRef.current.appendChild(ripple);
+      // Create ripple effect - limit number of ripples
+      const existingRipples =
+        heroRef.current.querySelectorAll(".ripple-effect").length;
+      if (existingRipples < 5) {
+        const ripple = document.createElement("div");
+        ripple.className =
+          "absolute w-4 h-4 bg-blue-500/20 rounded-full pointer-events-none ripple-effect";
+        ripple.style.left = `${x}px`;
+        ripple.style.top = `${y}px`;
+        heroRef.current.appendChild(ripple);
 
-      gsap.to(ripple, {
-        opacity: 0,
-        scale: 3,
-        duration: 1,
-        onComplete: () => ripple.remove(),
-      });
+        gsap.to(ripple, {
+          opacity: 0,
+          scale: 3,
+          duration: 1,
+          onComplete: () => ripple.remove(),
+        });
+      }
     };
 
     const heroElement = heroRef.current;
@@ -106,89 +121,106 @@ const HeroSection = ({
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-950/20 to-transparent opacity-40" />
         <motion.div
           className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl"
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, 30, 0],
             y: [0, -30, 0],
           }}
           transition={{
-            duration: 8,
+            duration: 20, // Slower animation for better performance
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          style={{ willChange: "transform" }} // Optimize for animations
         />
         <motion.div
           className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl"
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, -40, 0],
             y: [0, 40, 0],
           }}
           transition={{
-            duration: 10,
+            duration: 25, // Slower animation for better performance
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          style={{ willChange: "transform" }} // Optimize for animations
         />
         <motion.div
           className="absolute top-1/2 right-1/3 w-72 h-72 rounded-full bg-cyan-500/10 blur-3xl"
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, 50, 0],
             y: [0, 20, 0],
           }}
           transition={{
-            duration: 12,
+            duration: 30, // Slower animation for better performance
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          style={{ willChange: "transform" }} // Optimize for animations
         />
       </div>
 
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMxMjEyMTIiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMzBjMCAxNi41NjktMTMuNDMxIDMwLTMwIDMwQzEzLjQzMSA2MCAwIDQ2LjU2OSAwIDMwIDAgMTMuNDMxIDEzLjQzMSAwIDMwIDBjMTYuNTY5IDAgMzAgMTMuNDMxIDMwIDMweiIgc3Ryb2tlPSIjMjIyIiBzdHJva2Utd2lkdGg9Ii41Ii8+PHBhdGggZD0iTTYwIDYwTDAgME02MCAwTDAgNjAiIHN0cm9rZT0iIzIyMiIgc3Ryb2tlLXdpZHRoPSIuNSIvPjwvZz48L3N2Zz4=')] opacity-10 z-0" />
 
-      {/* Floating tech icons */}
+      {/* Floating tech icons - conditionally rendered based on device */}
       <div className="absolute inset-0 z-0">
-        <motion.div
-          className="absolute top-1/4 left-1/5 text-blue-400 opacity-20"
-          animate={{
-            y: [0, -20, 0],
-            rotate: [0, 10, 0],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <Code size={40} />
-        </motion.div>
-        <motion.div
-          className="absolute bottom-1/3 right-1/4 text-cyan-400 opacity-20"
-          animate={{
-            y: [0, 20, 0],
-            rotate: [0, -10, 0],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <Zap size={50} />
-        </motion.div>
-        <motion.div
-          className="absolute top-1/2 right-1/5 text-indigo-400 opacity-20"
-          animate={{
-            y: [0, -15, 0],
-            rotate: [0, 15, 0],
-          }}
-          transition={{
-            duration: 7,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <Sparkles size={45} />
-        </motion.div>
+        {/* Only render these on desktop for better mobile performance */}
+        {!window.matchMedia("(max-width: 768px)").matches && (
+          <>
+            <motion.div
+              className="absolute top-1/4 left-1/5 text-blue-400 opacity-20"
+              initial={{ y: 0, rotate: 0 }}
+              animate={{
+                y: [0, -20, 0],
+                rotate: [0, 10, 0],
+              }}
+              transition={{
+                duration: 15, // Slower animation for better performance
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{ willChange: "transform" }} // Optimize for animations
+            >
+              <Code size={40} />
+            </motion.div>
+            <motion.div
+              className="absolute bottom-1/3 right-1/4 text-cyan-400 opacity-20"
+              initial={{ y: 0, rotate: 0 }}
+              animate={{
+                y: [0, 20, 0],
+                rotate: [0, -10, 0],
+              }}
+              transition={{
+                duration: 18, // Slower animation for better performance
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{ willChange: "transform" }} // Optimize for animations
+            >
+              <Zap size={50} />
+            </motion.div>
+            <motion.div
+              className="absolute top-1/2 right-1/5 text-indigo-400 opacity-20"
+              initial={{ y: 0, rotate: 0 }}
+              animate={{
+                y: [0, -15, 0],
+                rotate: [0, 15, 0],
+              }}
+              transition={{
+                duration: 20, // Slower animation for better performance
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+              style={{ willChange: "transform" }} // Optimize for animations
+            >
+              <Sparkles size={45} />
+            </motion.div>
+          </>
+        )}
       </div>
 
       {/* Content container */}

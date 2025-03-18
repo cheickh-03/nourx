@@ -57,8 +57,19 @@ const ServicesSection = ({
   const cardsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Floating cards effect on mouse move
+    // Check if we're on mobile - don't add mouse effects on mobile
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (isMobile) return;
+
+    // Floating cards effect on mouse move - desktop only
+    let lastTime = 0;
+    const throttleDelay = 50; // ms between updates
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = Date.now();
+      if (now - lastTime < throttleDelay) return;
+      lastTime = now;
+
       if (!cardsRef.current) return;
 
       const cards = cardsRef.current.querySelectorAll(".service-card");
@@ -73,9 +84,9 @@ const ServicesSection = ({
       cards.forEach((card, index) => {
         const factor = index % 2 === 0 ? 1 : -1;
         gsap.to(card, {
-          rotateY: xPos * 5 * factor,
-          rotateX: -yPos * 5 * factor,
-          translateZ: "20px",
+          rotateY: xPos * 3 * factor, // Reduced rotation amount
+          rotateX: -yPos * 3 * factor, // Reduced rotation amount
+          translateZ: "10px", // Reduced depth
           duration: 0.5,
           ease: "power2.out",
         });
@@ -155,27 +166,31 @@ const ServicesSection = ({
       <div className="absolute inset-0 overflow-hidden">
         <motion.div
           className="absolute top-20 left-10 w-40 h-40 rounded-full bg-blue-600/5 blur-3xl"
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, 50, 0],
             y: [0, 30, 0],
           }}
           transition={{
-            duration: 15,
+            duration: 25, // Slower animation for better performance
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          style={{ willChange: "transform" }} // Optimize for animations
         />
         <motion.div
           className="absolute bottom-20 right-10 w-60 h-60 rounded-full bg-indigo-500/5 blur-3xl"
+          initial={{ x: 0, y: 0 }}
           animate={{
             x: [0, -40, 0],
             y: [0, -30, 0],
           }}
           transition={{
-            duration: 18,
+            duration: 28, // Slower animation for better performance
             repeat: Infinity,
             ease: "easeInOut",
           }}
+          style={{ willChange: "transform" }} // Optimize for animations
         />
       </div>
 
