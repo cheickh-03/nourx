@@ -50,7 +50,7 @@ const ServiceCard = ({
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
     >
-      <Card className="w-full max-w-[320px] h-[400px] bg-black border border-blue-900 hover:border-blue-400 transition-all duration-300 flex flex-col overflow-hidden group relative">
+      <Card className="w-full max-w-[320px] h-[350px] sm:h-[400px] bg-black border border-blue-900 hover:border-blue-400 transition-all duration-300 flex flex-col overflow-hidden group relative">
         {/* Animated background gradient */}
         <div
           className={`absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isHovered ? "animate-gradient" : ""}`}

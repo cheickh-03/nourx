@@ -93,7 +93,7 @@ const HeroSection = ({
   return (
     <section
       ref={heroRef}
-      className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-black"
+      className="relative w-full min-h-[600px] h-screen flex items-center justify-center overflow-hidden bg-black"
     >
       {/* Custom cursor for hero section */}
       <div
@@ -197,13 +197,13 @@ const HeroSection = ({
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={titleControls}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
           <h1 className="text-center font-bold leading-none tracking-tight">
-            <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-300 to-white pb-2">
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-300 to-white pb-1 sm:pb-2">
               {title}
             </span>
-            <span className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-white to-blue-400 pt-2">
+            <span className="block text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-white to-blue-400 pt-1 sm:pt-2">
               {secondTitle}
             </span>
           </h1>
@@ -213,9 +213,9 @@ const HeroSection = ({
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={subtitleControls}
-          className="mb-12"
+          className="mb-8 sm:mb-12"
         >
-          <p className="text-xl md:text-2xl lg:text-3xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-300 max-w-3xl mx-auto px-2">
             {subtitle}
           </p>
         </motion.div>
@@ -229,7 +229,7 @@ const HeroSection = ({
         >
           <Button
             onClick={onCtaClick}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-6 rounded-md text-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 flex items-center gap-2 relative overflow-hidden group"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 md:px-8 py-4 sm:py-5 md:py-6 rounded-md text-base sm:text-lg font-medium transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 flex items-center gap-2 relative overflow-hidden group"
           >
             <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             <span className="relative z-10 flex items-center gap-2">

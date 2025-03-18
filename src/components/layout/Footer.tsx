@@ -43,7 +43,7 @@ const Footer = ({
   return (
     <footer className="bg-black text-white py-16 border-t border-blue-900/30">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
           {/* Logo and About */}
           <div className="space-y-6">
             <div className="flex items-center">

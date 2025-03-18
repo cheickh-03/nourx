@@ -141,5 +141,13 @@
   /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Fix for mobile viewport height issues */
+  @supports (-webkit-touch-callout: none) {
+    .h-screen {
+      height: -webkit-fill-available;
+    }
   }
 }

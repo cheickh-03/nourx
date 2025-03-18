@@ -62,7 +62,7 @@ const ContactSection = ({
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">{subtitle}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-12 items-start">
+        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-start">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}

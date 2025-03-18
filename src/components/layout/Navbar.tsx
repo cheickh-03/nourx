@@ -34,7 +34,7 @@ const Navbar = ({
   const navbarClasses = cn(
     "fixed top-0 left-0 w-full z-50 transition-all duration-300 ease-in-out",
     {
-      "bg-black/80 backdrop-blur-md shadow-lg": scrolled || !transparent,
+      "bg-black/90 backdrop-blur-md shadow-lg": scrolled || !transparent,
       "bg-transparent": transparent && !scrolled,
     },
   );
@@ -47,10 +47,10 @@ const Navbar = ({
 
   return (
     <nav className={navbarClasses}>
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center">
-          <a href="#" className="text-2xl font-bold text-blue-500">
+          <a href="#" className="text-xl sm:text-2xl font-bold text-blue-500">
             NourX
           </a>
         </div>

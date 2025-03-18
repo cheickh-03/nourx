@@ -149,7 +149,7 @@ const ServicesSection = ({
   return (
     <section
       ref={sectionRef}
-      className="w-full py-20 px-4 md:px-8 lg:px-16 bg-black text-white min-h-[800px] relative animate-on-scroll"
+      className="w-full py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-16 bg-black text-white min-h-[600px] md:min-h-[800px] relative animate-on-scroll"
     >
       {/* Animated background shapes */}
       <div className="absolute inset-0 overflow-hidden">
@@ -180,12 +180,14 @@ const ServicesSection = ({
       </div>
 
       <ParallaxSection speed={0.05} className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
+        <div className="text-center mb-10 sm:mb-16">
           <TextReveal className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-blue-400">
             <h2>{title}</h2>
           </TextReveal>
           <Separator className="w-24 h-1 bg-blue-600 mx-auto mb-6" />
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">{subtitle}</p>
+          <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto px-2">
+            {subtitle}
+          </p>
         </div>
 
         <motion.div
@@ -194,13 +196,13 @@ const ServicesSection = ({
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center perspective-1000"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 justify-items-center perspective-1000"
         >
           {services.map((service, index) => (
             <motion.div
               key={index}
               variants={itemVariants}
-              className="service-card transform-gpu"
+              className="service-card transform-gpu w-full max-w-[320px]"
             >
               <ServiceCard
                 title={service.title}
