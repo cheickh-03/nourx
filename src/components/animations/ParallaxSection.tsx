@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 interface ParallaxSectionProps {
   children: React.ReactNode;
@@ -14,29 +15,39 @@ const ParallaxSection: React.FC<ParallaxSectionProps> = ({
   className = "",
 }) => {
   const sectionRef = useRef<HTMLDivElement>(null);
-
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
+    // Ne pas appliquer d'effet parallaxe sur mobile pour de meilleures performances
+    if (isMobile) return;
+    
     const section = sectionRef.current;
     if (!section) return;
 
-    gsap.to(section, {
-      y: () => window.innerHeight * speed * -1,
-      ease: "none",
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "bottom top",
-        scrub: true,
-        invalidateOnRefresh: true,
-      },
+    // Réduire la complexité de l'effet sur les écrans plus petits
+    const adjustedSpeed = speed * 0.7;
+
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: "top bottom",
+      end: "bottom top",
+      scrub: true,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => {
+        // Animation plus efficace basée sur le progrès du défilement
+        // plutôt que de recalculer constamment la position
+        gsap.set(section, {
+          y: self.progress * window.innerHeight * adjustedSpeed * -1,
+        });
+      }
     });
 
     return () => {
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      trigger.kill();
     };
-  }, [speed]);
+  }, [speed, isMobile]);
 
   return (
     <div ref={sectionRef} className={`relative ${className}`}>

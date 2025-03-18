@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useAnimation } from "framer-motion";
 import { Button } from "../../components/ui/button";
 import { ArrowRight, Code, Sparkles, Zap } from "lucide-react";
 import gsap from "gsap";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 interface HeroSectionProps {
   title?: string;
@@ -24,6 +25,7 @@ const HeroSection = ({
   const titleControls = useAnimation();
   const subtitleControls = useAnimation();
   const ctaControls = useAnimation();
+  const isMobile = useMediaQuery("(max-width: 768px)");
 
   useEffect(() => {
     // Animate elements on mount
@@ -47,7 +49,6 @@ const HeroSection = ({
     sequence();
 
     // Check if we're on mobile - don't add mouse effects on mobile
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     if (isMobile) return;
 
     // Mouse trail effect for hero section - desktop only
@@ -103,31 +104,33 @@ const HeroSection = ({
         heroElement.removeEventListener("mousemove", handleMouseMove);
       }
     };
-  }, [titleControls, subtitleControls, ctaControls]);
+  }, [titleControls, subtitleControls, ctaControls, isMobile]);
 
   return (
     <section
       ref={heroRef}
       className="relative w-full min-h-[600px] h-screen flex items-center justify-center overflow-hidden bg-black"
     >
-      {/* Custom cursor for hero section */}
-      <div
-        ref={cursorRef}
-        className="absolute w-40 h-40 rounded-full bg-blue-500/10 blur-xl pointer-events-none z-0"
-      />
+      {/* Custom cursor for hero section - only on desktop */}
+      {!isMobile && (
+        <div
+          ref={cursorRef}
+          className="absolute w-40 h-40 rounded-full bg-blue-500/10 blur-xl pointer-events-none z-0"
+        />
+      )}
 
-      {/* Animated background elements */}
+      {/* Animated background elements - simplified for mobile */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-blue-950/20 to-transparent opacity-40" />
         <motion.div
           className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-blue-600/10 blur-3xl"
           initial={{ x: 0, y: 0 }}
           animate={{
-            x: [0, 30, 0],
-            y: [0, -30, 0],
+            x: [0, isMobile ? 15 : 30, 0],
+            y: [0, isMobile ? -15 : -30, 0],
           }}
           transition={{
-            duration: 20, // Slower animation for better performance
+            duration: isMobile ? 30 : 20, // Slower animation for mobile
             repeat: Infinity,
             ease: "easeInOut",
           }}
@@ -137,30 +140,32 @@ const HeroSection = ({
           className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl"
           initial={{ x: 0, y: 0 }}
           animate={{
-            x: [0, -40, 0],
-            y: [0, 40, 0],
+            x: [0, isMobile ? -20 : -40, 0],
+            y: [0, isMobile ? 20 : 40, 0],
           }}
           transition={{
-            duration: 25, // Slower animation for better performance
+            duration: isMobile ? 35 : 25, // Slower animation for mobile
             repeat: Infinity,
             ease: "easeInOut",
           }}
           style={{ willChange: "transform" }} // Optimize for animations
         />
-        <motion.div
-          className="absolute top-1/2 right-1/3 w-72 h-72 rounded-full bg-cyan-500/10 blur-3xl"
-          initial={{ x: 0, y: 0 }}
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 20, 0],
-          }}
-          transition={{
-            duration: 30, // Slower animation for better performance
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          style={{ willChange: "transform" }} // Optimize for animations
-        />
+        {!isMobile && (
+          <motion.div
+            className="absolute top-1/2 right-1/3 w-72 h-72 rounded-full bg-cyan-500/10 blur-3xl"
+            initial={{ x: 0, y: 0 }}
+            animate={{
+              x: [0, 50, 0],
+              y: [0, 20, 0],
+            }}
+            transition={{
+              duration: 30, 
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            style={{ willChange: "transform" }}
+          />
+        )}
       </div>
 
       {/* Grid pattern overlay */}
@@ -169,7 +174,7 @@ const HeroSection = ({
       {/* Floating tech icons - conditionally rendered based on device */}
       <div className="absolute inset-0 z-0">
         {/* Only render these on desktop for better mobile performance */}
-        {!window.matchMedia("(max-width: 768px)").matches && (
+        {!isMobile && (
           <>
             <motion.div
               className="absolute top-1/4 left-1/5 text-blue-400 opacity-20"
@@ -179,11 +184,11 @@ const HeroSection = ({
                 rotate: [0, 10, 0],
               }}
               transition={{
-                duration: 15, // Slower animation for better performance
+                duration: 15,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ willChange: "transform" }} // Optimize for animations
+              style={{ willChange: "transform" }}
             >
               <Code size={40} />
             </motion.div>
@@ -195,11 +200,11 @@ const HeroSection = ({
                 rotate: [0, -10, 0],
               }}
               transition={{
-                duration: 18, // Slower animation for better performance
+                duration: 18,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ willChange: "transform" }} // Optimize for animations
+              style={{ willChange: "transform" }}
             >
               <Zap size={50} />
             </motion.div>
@@ -211,11 +216,11 @@ const HeroSection = ({
                 rotate: [0, 15, 0],
               }}
               transition={{
-                duration: 20, // Slower animation for better performance
+                duration: 20,
                 repeat: Infinity,
                 ease: "easeInOut",
               }}
-              style={{ willChange: "transform" }} // Optimize for animations
+              style={{ willChange: "transform" }}
             >
               <Sparkles size={45} />
             </motion.div>

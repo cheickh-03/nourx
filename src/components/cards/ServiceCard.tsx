@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -27,6 +27,24 @@ const ServiceCard = ({
   onClick = () => {},
 }: ServiceCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Utiliser une approche directe pour détecter le mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    // Vérifier immédiatement
+    checkMobile();
+    
+    // Ajouter un écouteur pour les changements de taille
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   const getIcon = () => {
     switch (icon) {
@@ -45,29 +63,23 @@ const ServiceCard = ({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.03 }}
+      whileHover={!isMobile ? { scale: 1.03 } : undefined}
       transition={{ type: "spring", stiffness: 300, damping: 10 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      onHoverStart={() => !isMobile && setIsHovered(true)}
+      onHoverEnd={() => !isMobile && setIsHovered(false)}
+      onTouchStart={() => isMobile && setIsHovered(true)}
+      onTouchEnd={() => isMobile && setIsHovered(false)}
     >
       <Card className="w-full max-w-[320px] h-[350px] sm:h-[400px] bg-black border border-blue-900 hover:border-blue-400 transition-all duration-300 flex flex-col overflow-hidden group relative">
-        {/* Animated background gradient */}
+        {/* Fond animé - simplifié */}
         <div
-          className={`absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isHovered ? "animate-gradient" : ""}`}
+          className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
         />
 
         <CardHeader className="pb-2 relative z-10">
-          <motion.div
-            className="mb-4 p-3 bg-blue-950/50 rounded-lg w-fit"
-            animate={isHovered ? { y: [0, -5, 0], rotate: [0, 5, 0] } : {}}
-            transition={{
-              duration: 2,
-              repeat: isHovered ? Infinity : 0,
-              ease: "easeInOut",
-            }}
-          >
+          <div className="mb-4 p-3 bg-blue-950/50 rounded-lg w-fit">
             {getIcon()}
-          </motion.div>
+          </div>
           <CardTitle className="text-xl text-white group-hover:text-blue-400 transition-colors">
             {title}
           </CardTitle>
@@ -84,20 +96,11 @@ const ServiceCard = ({
             onClick={onClick}
           >
             <span className="relative z-10">{ctaText} </span>
-            <motion.div
-              animate={isHovered ? { x: [0, 5, 0] } : {}}
-              transition={{
-                duration: 1,
-                repeat: isHovered ? Infinity : 0,
-                ease: "easeInOut",
-              }}
-            >
-              <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
-            </motion.div>
+            <ArrowRight className="h-4 w-4 ml-1 transition-transform group-hover/btn:translate-x-1" />
           </Button>
         </CardFooter>
 
-        {/* Animated corner accent */}
+        {/* Accent de coin */}
         <div className="absolute bottom-0 right-0 w-16 h-16 overflow-hidden">
           <div className="absolute bottom-0 right-0 w-8 h-8 bg-blue-500/20 rotate-45 translate-x-1/2 translate-y-1/2 group-hover:bg-blue-500/40 transition-colors duration-300"></div>
         </div>

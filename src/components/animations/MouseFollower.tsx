@@ -6,12 +6,12 @@ const MouseFollower: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Don't render on mobile devices to improve performance
-  if (isMobile) return null;
-
   useEffect(() => {
+    // Ne pas ajouter d'événements sur mobile
+    if (isMobile) return;
+    
     const handleMouseMove = (e: MouseEvent) => {
-      // Throttle updates for better performance
+      // Limiter les mises à jour pour de meilleures performances
       requestAnimationFrame(() => {
         setPosition({ x: e.clientX, y: e.clientY });
         if (!isVisible) setIsVisible(true);
@@ -29,7 +29,10 @@ const MouseFollower: React.FC = () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.body.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [isVisible]);
+  }, [isVisible, isMobile]);
+
+  // Ne pas rendre sur les appareils mobiles pour améliorer les performances
+  if (isMobile) return null;
 
   return (
     <div
@@ -38,7 +41,7 @@ const MouseFollower: React.FC = () => {
         left: `${position.x}px`,
         top: `${position.y}px`,
         transform: "translate(-50%, -50%)",
-        willChange: "transform", // Optimize for animations
+        willChange: "transform", // Optimiser pour les animations
       }}
     >
       <div className="relative">

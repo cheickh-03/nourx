@@ -1,11 +1,10 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import ServiceCard from "../cards/ServiceCard";
 import { Separator } from "../ui/separator";
 import TextReveal from "../animations/TextReveal";
-import ParallaxSection from "../animations/ParallaxSection";
-import gsap from "gsap";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 interface ServicesProps {
   title?: string;
@@ -55,72 +54,24 @@ const ServicesSection = ({
   const navigate = useNavigate();
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
+  
+  // Utilisez useState comme backup au cas où useMediaQuery ne fonctionne pas correctement
+  const [viewportWidth, setViewportWidth] = useState(() => 
+    typeof window !== 'undefined' ? window.innerWidth : 1024
+  );
+  const isMobileMQ = useMediaQuery("(max-width: 768px)");
+  
+  // Combinez les deux approches pour plus de fiabilité
+  const isMobile = isMobileMQ || viewportWidth <= 768;
 
+  // Mise à jour de la largeur du viewport en cas de redimensionnement
   useEffect(() => {
-    // Check if we're on mobile - don't add mouse effects on mobile
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (isMobile) return;
-
-    // Floating cards effect on mouse move - desktop only
-    let lastTime = 0;
-    const throttleDelay = 50; // ms between updates
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const now = Date.now();
-      if (now - lastTime < throttleDelay) return;
-      lastTime = now;
-
-      if (!cardsRef.current) return;
-
-      const cards = cardsRef.current.querySelectorAll(".service-card");
-      const { clientX, clientY } = e;
-      const sectionRect = sectionRef.current?.getBoundingClientRect();
-
-      if (!sectionRect) return;
-
-      const xPos = (clientX - sectionRect.left) / sectionRect.width - 0.5;
-      const yPos = (clientY - sectionRect.top) / sectionRect.height - 0.5;
-
-      cards.forEach((card, index) => {
-        const factor = index % 2 === 0 ? 1 : -1;
-        gsap.to(card, {
-          rotateY: xPos * 3 * factor, // Reduced rotation amount
-          rotateX: -yPos * 3 * factor, // Reduced rotation amount
-          translateZ: "10px", // Reduced depth
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      });
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
     };
-
-    const handleMouseLeave = () => {
-      if (!cardsRef.current) return;
-
-      const cards = cardsRef.current.querySelectorAll(".service-card");
-
-      cards.forEach((card) => {
-        gsap.to(card, {
-          rotateY: 0,
-          rotateX: 0,
-          translateZ: "0px",
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      });
-    };
-
-    const sectionElement = sectionRef.current;
-    if (sectionElement) {
-      sectionElement.addEventListener("mousemove", handleMouseMove);
-      sectionElement.addEventListener("mouseleave", handleMouseLeave);
-    }
-
-    return () => {
-      if (sectionElement) {
-        sectionElement.removeEventListener("mousemove", handleMouseMove);
-        sectionElement.removeEventListener("mouseleave", handleMouseLeave);
-      }
-    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const containerVariants = {
@@ -128,7 +79,7 @@ const ServicesSection = ({
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2,
+        staggerChildren: isMobile ? 0.1 : 0.2,
       },
     },
   };
@@ -139,7 +90,7 @@ const ServicesSection = ({
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5,
+        duration: isMobile ? 0.3 : 0.5,
       },
     },
   };
@@ -162,43 +113,23 @@ const ServicesSection = ({
       ref={sectionRef}
       className="w-full py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-16 bg-black text-white min-h-[600px] md:min-h-[800px] relative animate-on-scroll"
     >
-      {/* Animated background shapes */}
+      {/* Fond simplifié pour tous les appareils */}
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div
-          className="absolute top-20 left-10 w-40 h-40 rounded-full bg-blue-600/5 blur-3xl"
-          initial={{ x: 0, y: 0 }}
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 25, // Slower animation for better performance
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          style={{ willChange: "transform" }} // Optimize for animations
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-60 h-60 rounded-full bg-indigo-500/5 blur-3xl"
-          initial={{ x: 0, y: 0 }}
-          animate={{
-            x: [0, -40, 0],
-            y: [0, -30, 0],
-          }}
-          transition={{
-            duration: 28, // Slower animation for better performance
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          style={{ willChange: "transform" }} // Optimize for animations
-        />
+        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-blue-600/5 blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-60 h-60 rounded-full bg-indigo-500/5 blur-3xl" />
       </div>
 
-      <ParallaxSection speed={0.05} className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 sm:mb-16">
-          <TextReveal className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-blue-400">
-            <h2>{title}</h2>
-          </TextReveal>
+          {isMobile ? (
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-blue-400">
+              {title}
+            </h2>
+          ) : (
+            <TextReveal className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-blue-400">
+              <h2>{title}</h2>
+            </TextReveal>
+          )}
           <Separator className="w-24 h-1 bg-blue-600 mx-auto mb-6" />
           <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto px-2">
             {subtitle}
@@ -210,8 +141,8 @@ const ServicesSection = ({
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 justify-items-center perspective-1000"
+          viewport={{ once: true, margin: "-50px" }}
+          className={`grid grid-cols-1 ${isMobile ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-4'} gap-4 sm:gap-6 md:gap-8 justify-items-center perspective-1000`}
         >
           {services.map((service, index) => (
             <motion.div
@@ -229,7 +160,7 @@ const ServicesSection = ({
             </motion.div>
           ))}
         </motion.div>
-      </ParallaxSection>
+      </div>
     </section>
   );
 };

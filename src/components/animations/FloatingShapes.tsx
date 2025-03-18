@@ -1,65 +1,75 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 const FloatingShapes: React.FC = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
-  // Reduce number of shapes on mobile
-  const shapes = [
-    {
-      type: "circle",
-      size: isMobile ? 60 : 80,
-      x: "10%",
-      y: "20%",
-      duration: isMobile ? 30 : 20,
-      delay: 0,
-      color: "rgba(59, 130, 246, 0.1)",
-    },
-    {
-      type: "square",
-      size: isMobile ? 40 : 60,
-      x: "85%",
-      y: "15%",
-      duration: isMobile ? 35 : 25,
-      delay: 5,
-      color: "rgba(99, 102, 241, 0.1)",
-    },
-    // Only show these shapes on desktop
-    ...(!isMobile
-      ? [
-          {
-            type: "triangle",
-            size: 70,
-            x: "75%",
-            y: "60%",
-            duration: 18,
-            delay: 2,
-            color: "rgba(14, 165, 233, 0.1)",
-          },
-          {
-            type: "circle",
-            size: 100,
-            x: "20%",
-            y: "70%",
-            duration: 22,
-            delay: 8,
-            color: "rgba(59, 130, 246, 0.1)",
-          },
-          {
-            type: "square",
-            size: 50,
-            x: "50%",
-            y: "30%",
-            duration: 15,
-            delay: 4,
-            color: "rgba(99, 102, 241, 0.1)",
-          },
-        ]
-      : []),
-  ];
+  // Mémoriser les formes pour éviter de recalculer à chaque rendu
+  const shapes = useMemo(() => {
+    // Réduire le nombre de formes sur mobile
+    const baseShapes = [
+      {
+        type: "circle",
+        size: isMobile ? 60 : 80,
+        x: "10%",
+        y: "20%",
+        duration: isMobile ? 45 : 20,
+        delay: 0,
+        color: "rgba(59, 130, 246, 0.1)",
+      },
+      {
+        type: "square",
+        size: isMobile ? 40 : 60,
+        x: "85%",
+        y: "15%",
+        duration: isMobile ? 50 : 25,
+        delay: 5,
+        color: "rgba(99, 102, 241, 0.1)",
+      },
+    ];
+
+    // Ajouter des formes supplémentaires uniquement sur desktop
+    if (!isMobile) {
+      return [
+        ...baseShapes,
+        {
+          type: "triangle",
+          size: 70,
+          x: "75%",
+          y: "60%",
+          duration: 18,
+          delay: 2,
+          color: "rgba(14, 165, 233, 0.1)",
+        },
+        {
+          type: "circle",
+          size: 100,
+          x: "20%",
+          y: "70%",
+          duration: 22,
+          delay: 8,
+          color: "rgba(59, 130, 246, 0.1)",
+        },
+        {
+          type: "square",
+          size: 50,
+          x: "50%",
+          y: "30%",
+          duration: 15,
+          delay: 4,
+          color: "rgba(99, 102, 241, 0.1)",
+        },
+      ];
+    }
+
+    return baseShapes;
+  }, [isMobile]);
 
   const renderShape = (shape: any, index: number) => {
+    // Réduire l'amplitude des animations sur mobile
+    const animationScale = isMobile ? 0.5 : 1;
+    
     const commonProps = {
       key: index,
       className: "absolute blur-xl",
@@ -69,12 +79,12 @@ const FloatingShapes: React.FC = () => {
         left: shape.x,
         top: shape.y,
         backgroundColor: shape.color,
-        willChange: "transform", // Optimize for animations
+        willChange: "transform", // Optimiser pour les animations
       },
       animate: {
-        y: isMobile ? [0, -15, 0] : [0, -30, 0],
-        x: isMobile ? [0, 10, 0] : [0, 20, 0],
-        rotate: isMobile ? [0, 5, 0] : [0, 10, 0],
+        y: [0, -30 * animationScale, 0],
+        x: [0, 20 * animationScale, 0],
+        rotate: [0, 10 * animationScale, 0],
       },
       transition: {
         duration: shape.duration,

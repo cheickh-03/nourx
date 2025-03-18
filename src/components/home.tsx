@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeroSection from "./sections/HeroSection";
 import ServicesSection from "./sections/ServicesSection";
@@ -15,81 +14,125 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  // Détection directe du mobile pour éviter les problèmes avec le hook
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
-    // Register GSAP plugins
-    gsap.registerPlugin(ScrollTrigger);
-
-    // Initialize persistent scroll animations
-    const sections = document.querySelectorAll("section");
-
-    sections.forEach((section) => {
-      ScrollTrigger.create({
-        trigger: section,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.to(section, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
+    // N'initialiser qu'une seule fois
+    if (isInitialized) return;
+    
+    // Marquer comme initialisé immédiatement
+    setIsInitialized(true);
+    
+    try {
+      // Enregistrer les plugins GSAP
+      if (typeof gsap !== 'undefined' && gsap.registerPlugin) {
+        gsap.registerPlugin(ScrollTrigger);
+        console.log('GSAP et ScrollTrigger enregistrés avec succès');
+      } else {
+        console.warn('GSAP ou ScrollTrigger non disponible');
+        return; // Ne pas continuer si GSAP n'est pas disponible
+      }
+      
+      // Utiliser un délai pour s'assurer que le DOM est chargé
+      const timer = setTimeout(() => {
+        try {
+          // Initialiser des animations très basiques
+          const sections = document.querySelectorAll("section");
+          console.log('Sections trouvées pour animation:', sections.length);
+          
+          sections.forEach((section) => {
+            gsap.set(section, { opacity: 0, y: 20 });
+            
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 85%",
+              onEnter: () => {
+                gsap.to(section, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.6,
+                  ease: "power2.out",
+                });
+              },
+              once: true
+            });
           });
-        },
-        onLeaveBack: () => {
-          gsap.to(section, {
-            opacity: 0.5,
-            y: 50,
-            duration: 0.8,
-            ease: "power2.in",
+          
+          // Animation simplifiée pour les éléments marqués
+          const elementsToAnimate = document.querySelectorAll(".animate-on-scroll, .animate-on-scroll-important");
+          console.log('Éléments à animer trouvés:', elementsToAnimate.length);
+          
+          elementsToAnimate.forEach((element) => {
+            gsap.set(element, { opacity: 0, y: 20 });
+            
+            ScrollTrigger.create({
+              trigger: element,
+              start: "top 85%",
+              onEnter: () => {
+                gsap.to(element, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.6,
+                  ease: "power2.out",
+                });
+              },
+              once: true
+            });
           });
-        },
-        onEnterBack: () => {
-          gsap.to(section, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          });
-        },
-        onLeave: () => {
-          gsap.to(section, {
-            opacity: 0.5,
-            y: -50,
-            duration: 0.8,
-            ease: "power2.in",
-          });
-        },
-      });
-    });
+        } catch (error) {
+          console.error("Erreur lors de l'animation:", error);
+        }
+      }, 300); // Délai uniforme pour tous les appareils
+      
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation de GSAP:", error);
+    }
+  }, [isInitialized]);
 
-    // Initialize section animations
-    gsap.utils.toArray(".animate-on-scroll").forEach((element: any) => {
-      gsap.set(element, { opacity: 0, y: 50 });
-
-      ScrollTrigger.create({
-        trigger: element,
-        start: "top 80%",
-        onEnter: () => {
-          gsap.to(element, {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-          });
-        },
-        once: true,
-      });
-    });
-
+  // Nettoyer les animations lors du démontage
+  useEffect(() => {
     return () => {
-      // Clean up all scroll triggers when component unmounts
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      try {
+        if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getAll) {
+          ScrollTrigger.getAll().forEach((trigger) => {
+            if (trigger && trigger.kill) trigger.kill();
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors du nettoyage des animations:", error);
+      }
     };
   }, []);
 
   const handleCtaClick = () => {
     navigate("/projet");
   };
+
+  console.log('Home - isMobile:', isMobile);
+  console.log('Home - isInitialized:', isInitialized);
+  console.log('Rendu de MouseFollower');
+  console.log('Rendu de ScrollProgress');
+  console.log('Rendu de FloatingShapes');
+  console.log('Rendu de Navbar');
+  console.log('Rendu de HeroSection');
+  console.log('Rendu de ServicesSection');
+  console.log('Rendu de AboutSection');
+  console.log('Rendu de ContactSection');
+  console.log('Rendu de Footer');
 
   return (
     <div className="bg-black min-h-screen overflow-x-hidden">
