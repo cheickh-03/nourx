@@ -4,6 +4,7 @@ import HeroSection from "./sections/HeroSection";
 import ServicesSection from "./sections/ServicesSection";
 import AboutSection from "./sections/AboutSection";
 import ContactSection from "./sections/ContactSection";
+import ProcessSection from "./sections/ProcessSection";
 import Navbar from "./layout/Navbar";
 import Footer from "./layout/Footer";
 import MouseFollower from "./animations/MouseFollower";
@@ -130,6 +131,7 @@ const Home: React.FC = () => {
   console.log('Rendu de Navbar');
   console.log('Rendu de HeroSection');
   console.log('Rendu de ServicesSection');
+  console.log('Rendu de ProcessSection');
   console.log('Rendu de AboutSection');
   console.log('Rendu de ContactSection');
   console.log('Rendu de Footer');
@@ -143,6 +145,7 @@ const Home: React.FC = () => {
       <main>
         <HeroSection onCtaClick={handleCtaClick} />
         <ServicesSection />
+        <ProcessSection />
         <AboutSection />
         <ContactSection />
       </main>
