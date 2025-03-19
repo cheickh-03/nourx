@@ -2,7 +2,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Users2, Rocket, Target } from "lucide-react";
 import CountUp from 'react-countup';
-import SectionBackground from "../layout/SectionBackground";
 
 interface AboutSectionProps {
   stats?: {
@@ -22,7 +21,11 @@ const AboutSection: React.FC<AboutSectionProps> = ({
   return (
     <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="about">
       {/* Fond avec effet de gradient */}
-      <SectionBackground variant="gradient" />
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute -bottom-48 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         {/* En-tête Impact */}
