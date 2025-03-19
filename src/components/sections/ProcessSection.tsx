@@ -196,7 +196,7 @@ const ProcessSection: React.FC = () => {
   };
 
   return (
-    <section className="w-full py-24 bg-black text-white relative overflow-hidden" id="process">
+    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process">
       {/* Fond avec effet de gradient */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
@@ -205,7 +205,7 @@ const ProcessSection: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex justify-between items-center mb-16">
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-16 gap-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -213,28 +213,28 @@ const ProcessSection: React.FC = () => {
             viewport={{ once: true }}
             className="text-center flex-1"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
               Notre Processus
             </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-8"></div>
-            <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-300">
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 md:mb-8"></div>
+            <p className="text-base md:text-xl max-w-3xl mx-auto text-gray-300">
               Une méthodologie éprouvée pour transformer vos idées en réalité
             </p>
           </motion.div>
           
           <button
             onClick={() => setIsCondensed(!isCondensed)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-300"
+            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-300"
           >
             {isCondensed ? (
               <>
-                <Maximize2 className="w-4 h-4" />
-                <span className="text-sm">Vue détaillée</span>
+                <Maximize2 className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="text-xs md:text-sm">Vue détaillée</span>
               </>
             ) : (
               <>
-                <Minimize2 className="w-4 h-4" />
-                <span className="text-sm">Vue condensée</span>
+                <Minimize2 className="w-3 h-3 md:w-4 md:h-4" />
+                <span className="text-xs md:text-sm">Vue condensée</span>
               </>
             )}
           </button>
@@ -243,27 +243,31 @@ const ProcessSection: React.FC = () => {
         <div className="max-w-7xl mx-auto">
           {isCondensed ? (
             // Vue condensée
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {processSteps.map((step, index) => (
                 <motion.div
                   key={index}
                   variants={cardVariants}
                   initial="hidden"
                   animate="visible"
-                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer`}
+                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer`}
                   onClick={() => {
                     setActiveStep(index);
                     setIsCondensed(false);
                   }}
                 >
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center mb-3`}>
-                    {step.icon}
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center mb-2 md:mb-3`}>
+                    {React.cloneElement(step.icon as React.ReactElement, {
+                      className: "w-5 h-5 md:w-6 md:h-6"
+                    })}
                   </div>
-                  <h3 className="text-sm font-bold mb-2">{step.title}</h3>
+                  <h3 className="text-xs md:text-sm font-bold mb-2">{step.title}</h3>
                   <div className="flex flex-wrap gap-1">
                     {step.deliverables.map((deliverable, idx) => (
                       <div key={idx} className="text-gray-400 hover:text-white transition-colors">
-                        {deliverable.icon}
+                        {React.cloneElement(deliverable.icon as React.ReactElement, {
+                          className: "w-3 h-3 md:w-4 md:h-4"
+                        })}
                       </div>
                     ))}
                   </div>
@@ -271,10 +275,10 @@ const ProcessSection: React.FC = () => {
               ))}
             </div>
           ) : (
-            // Vue détaillée existante
-            <div className="relative pt-20">
+            // Vue détaillée
+            <div className="relative pt-16 md:pt-20">
               {/* Ligne de progression principale */}
-              <div className="absolute top-8 left-0 w-full h-1 bg-gray-800">
+              <div className="absolute top-6 md:top-8 left-0 w-full h-0.5 md:h-1 bg-gray-800">
                 <motion.div
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-blue-600"
                   initial={{ width: "0%" }}
@@ -284,19 +288,19 @@ const ProcessSection: React.FC = () => {
               </div>
 
               {/* Indicateur de progression */}
-              <div className="absolute top-0 left-0 w-full flex justify-between mb-6">
+              <div className="absolute top-0 left-0 w-full flex justify-between mb-4 md:mb-6">
                 {processSteps.map((_, index) => (
                   <div 
                     key={index} 
                     className={`relative flex items-center justify-center ${index <= activeStep ? 'text-blue-400' : 'text-gray-600'}`}
                   >
-                    <span className="text-xs font-mono">{index + 1}</span>
+                    <span className="text-[10px] md:text-xs font-mono">{index + 1}</span>
                   </div>
                 ))}
               </div>
 
               {/* Points de connexion et contenus */}
-              <div className="grid grid-cols-6 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6">
                 {processSteps.map((step, index) => (
                   <motion.div
                     key={index}
@@ -304,12 +308,12 @@ const ProcessSection: React.FC = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                     viewport={{ once: true }}
-                    className="relative group"
+                    className={`relative group ${activeStep === index ? 'block' : 'hidden md:block'}`}
                     onMouseEnter={() => setActiveStep(index)}
                   >
                     {/* Point de connexion */}
                     <motion.div
-                      className={`absolute top-[-48px] left-1/2 transform -translate-x-1/2 w-12 h-12 rounded-full bg-gradient-to-r ${
+                      className={`absolute top-[-36px] md:top-[-48px] left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${
                         step.color
                       } flex items-center justify-center cursor-pointer transition-all duration-300 group-hover:scale-110 shadow-lg shadow-blue-500/20 z-20 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
                       onClick={() => setActiveStep(index)}
@@ -322,46 +326,48 @@ const ProcessSection: React.FC = () => {
                       } : {}}
                     >
                       {index < activeStep ? (
-                        <CheckCircle2 className="w-8 h-8 text-white" />
+                        <CheckCircle2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
                       ) : (
-                        step.icon
+                        React.cloneElement(step.icon as React.ReactElement, {
+                          className: "w-5 h-5 md:w-8 md:h-8"
+                        })
                       )}
                     </motion.div>
 
                     {/* Ligne verticale de connexion */}
-                    <div className={`absolute top-[-36px] left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b ${step.color}`} />
+                    <div className={`absolute top-[-28px] md:top-[-36px] left-1/2 transform -translate-x-1/2 w-0.5 h-6 md:h-8 bg-gradient-to-b ${step.color}`} />
 
                     {/* Contenu */}
                     <motion.div
                       initial={false}
                       animate={{
-                        scale: activeStep === index ? 1.05 : 1,
-                        y: activeStep === index ? -5 : 0,
+                        scale: activeStep === index ? 1.02 : 1,
+                        y: activeStep === index ? -2 : 0,
                       }}
-                      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-6 transition-all duration-300 border cursor-pointer ${
+                      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 md:p-6 transition-all duration-300 border cursor-pointer ${
                         activeStep === index
                           ? "border-blue-500/50 shadow-lg shadow-blue-500/20"
                           : "border-gray-800"
                       } hover:border-blue-500/50`}
                       onClick={() => toggleExample()}
                     >
-                      <div className="flex justify-between items-center mb-3">
-                        <h3 className={`text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r ${step.color}`}>
+                      <div className="flex justify-between items-center mb-2 md:mb-3">
+                        <h3 className={`text-base md:text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r ${step.color}`}>
                           {step.title}
                         </h3>
-                        <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded-full text-gray-400">
+                        <span className="text-[10px] md:text-xs font-mono bg-gray-800 px-2 py-0.5 md:py-1 rounded-full text-gray-400">
                           {index + 1}/{processSteps.length}
                         </span>
                       </div>
-                      <p className="text-gray-300 text-sm leading-relaxed mb-3">
+                      <p className="text-xs md:text-sm text-gray-300 leading-relaxed mb-3">
                         {step.description}
                       </p>
 
                       {/* Durée estimée */}
                       <div className="mb-3">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs text-gray-400">Durée:</span>
-                          <span className="text-xs font-semibold text-white">
+                          <span className="text-[10px] md:text-xs text-gray-400">Durée:</span>
+                          <span className="text-[10px] md:text-xs font-semibold text-white">
                             {step.duration.min === step.duration.max ? 
                               `${step.duration.min} ${step.duration.unit}` : 
                               step.duration.min === 0 ? 
@@ -370,7 +376,7 @@ const ProcessSection: React.FC = () => {
                           </span>
                         </div>
                         {step.duration.min !== 0 && (
-                          <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
+                          <div className="w-full h-1 md:h-1.5 bg-gray-800 rounded-full overflow-hidden">
                             <motion.div 
                               className={`h-full bg-gradient-to-r ${step.color}`} 
                               initial={{ width: 0 }}
@@ -392,15 +398,15 @@ const ProcessSection: React.FC = () => {
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="mt-4 pt-4 border-t border-gray-700"
+                            className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-700"
                           >
-                            <p className="text-sm text-blue-300 italic">{step.example}</p>
+                            <p className="text-xs md:text-sm text-blue-300 italic">{step.example}</p>
                           </motion.div>
                         )}
                       </AnimatePresence>
 
                       <button 
-                        className={`mt-4 text-xs text-blue-400 hover:text-blue-300 flex items-center ${showExample && index === activeStep ? 'opacity-100' : 'opacity-70'}`}
+                        className={`mt-3 md:mt-4 text-[10px] md:text-xs text-blue-400 hover:text-blue-300 flex items-center ${showExample && index === activeStep ? 'opacity-100' : 'opacity-70'}`}
                         onClick={(e) => {
                           e.stopPropagation();
                           if (index === activeStep) toggleExample();
@@ -414,36 +420,38 @@ const ProcessSection: React.FC = () => {
               </div>
 
               {/* Boutons de navigation */}
-              <div className="flex justify-center mt-12 gap-4">
+              <div className="flex justify-center mt-8 md:mt-12 gap-3 md:gap-4">
                 <button
                   onClick={handlePrev}
-                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-3 hover:border-blue-500 transition-all duration-300"
+                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
-                  <ChevronLeft className="w-6 h-6" />
+                  <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-3 hover:border-blue-500 transition-all duration-300"
+                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
-                  <ChevronRight className="w-6 h-6" />
+                  <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
               </div>
 
-              {/* Ajout des livrables dans la vue détaillée */}
+              {/* Livrables */}
               <motion.div
                 variants={deliverablesVariants}
                 initial="hidden"
                 animate="visible"
                 className="mt-4 pt-4 border-t border-gray-700"
               >
-                <h4 className="text-sm font-semibold mb-3 text-gray-300">Livrables:</h4>
-                <div className="flex flex-wrap gap-3">
+                <h4 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-gray-300">Livrables:</h4>
+                <div className="flex flex-wrap gap-2 md:gap-3">
                   {processSteps[activeStep].deliverables.map((deliverable, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 bg-gray-800/50 px-3 py-1.5 rounded-full text-sm"
+                      className="flex items-center gap-1.5 md:gap-2 bg-gray-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm"
                     >
-                      {deliverable.icon}
+                      {React.cloneElement(deliverable.icon as React.ReactElement, {
+                        className: "w-3 h-3 md:w-4 md:h-4"
+                      })}
                       <span className="text-gray-300">{deliverable.name}</span>
                     </div>
                   ))}
