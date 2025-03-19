@@ -10,8 +10,22 @@ import {
   Zap,
   ChevronLeft,
   ChevronRight,
-  CheckCircle2
+  CheckCircle2,
+  FileText,
+  Layout,
+  Database,
+  TestTube2,
+  Server,
+  BarChart,
+  Grid2x2,
+  Maximize2,
+  Minimize2
 } from "lucide-react";
+
+interface Deliverable {
+  icon: React.ReactNode;
+  name: string;
+}
 
 interface ProcessStep {
   icon: React.ReactNode;
@@ -24,6 +38,7 @@ interface ProcessStep {
     max: number;
     unit: string;
   };
+  deliverables: Deliverable[];
 }
 
 const processSteps: ProcessStep[] = [
@@ -38,7 +53,12 @@ const processSteps: ProcessStep[] = [
       min: 1,
       max: 2,
       unit: "semaines"
-    }
+    },
+    deliverables: [
+      { icon: <FileText className="w-4 h-4" />, name: "Cahier des charges" },
+      { icon: <Database className="w-4 h-4" />, name: "Analyse des besoins" },
+      { icon: <BarChart className="w-4 h-4" />, name: "Étude de marché" }
+    ]
   },
   {
     icon: <Search className="w-8 h-8" />,
@@ -51,7 +71,12 @@ const processSteps: ProcessStep[] = [
       min: 1,
       max: 3,
       unit: "semaines"
-    }
+    },
+    deliverables: [
+      { icon: <Layout className="w-4 h-4" />, name: "Maquettes" },
+      { icon: <FileText className="w-4 h-4" />, name: "Plan stratégique" },
+      { icon: <BarChart className="w-4 h-4" />, name: "KPIs" }
+    ]
   },
   {
     icon: <Code2 className="w-8 h-8" />,
@@ -64,7 +89,8 @@ const processSteps: ProcessStep[] = [
       min: 3,
       max: 8,
       unit: "semaines"
-    }
+    },
+    deliverables: []
   },
   {
     icon: <Settings className="w-8 h-8" />,
@@ -77,7 +103,8 @@ const processSteps: ProcessStep[] = [
       min: 1,
       max: 2,
       unit: "semaines"
-    }
+    },
+    deliverables: []
   },
   {
     icon: <Rocket className="w-8 h-8" />,
@@ -90,7 +117,8 @@ const processSteps: ProcessStep[] = [
       min: 1,
       max: 2,
       unit: "semaines"
-    }
+    },
+    deliverables: []
   },
   {
     icon: <Zap className="w-8 h-8" />,
@@ -103,14 +131,55 @@ const processSteps: ProcessStep[] = [
       min: 0,
       max: 0,
       unit: "continu"
-    }
+    },
+    deliverables: []
   },
 ];
 
 const ProcessSection: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showExample, setShowExample] = useState<boolean>(false);
+  const [isCondensed, setIsCondensed] = useState<boolean>(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+
+  // Variants pour les animations de transition
+  const cardVariants = {
+    hidden: { 
+      opacity: 0,
+      y: 20,
+      scale: 0.95
+    },
+    visible: { 
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: {
+        duration: 0.2
+      }
+    }
+  };
+
+  const deliverablesVariants = {
+    hidden: { opacity: 0, height: 0 },
+    visible: { 
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: "easeOut"
+      }
+    }
+  };
 
   const handleNext = () => {
     setActiveStep((prev) => (prev === processSteps.length - 1 ? 0 : prev + 1));
@@ -136,123 +205,73 @@ const ProcessSection: React.FC = () => {
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-            Notre Processus
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-8"></div>
-          <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-300">
-            Une méthodologie éprouvée pour transformer vos idées en réalité
-          </p>
-        </motion.div>
+        <div className="flex justify-between items-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center flex-1"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+              Notre Processus
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-8"></div>
+            <p className="text-lg md:text-xl max-w-3xl mx-auto text-gray-300">
+              Une méthodologie éprouvée pour transformer vos idées en réalité
+            </p>
+          </motion.div>
+          
+          <button
+            onClick={() => setIsCondensed(!isCondensed)}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-300"
+          >
+            {isCondensed ? (
+              <>
+                <Maximize2 className="w-4 h-4" />
+                <span className="text-sm">Vue détaillée</span>
+              </>
+            ) : (
+              <>
+                <Minimize2 className="w-4 h-4" />
+                <span className="text-sm">Vue condensée</span>
+              </>
+            )}
+          </button>
+        </div>
 
         <div className="max-w-7xl mx-auto">
-          {isMobile ? (
-            // Version mobile : Timeline verticale améliorée
-            <div className="space-y-12 relative">
-              <div className="absolute left-8 top-0 w-0.5 h-full bg-gray-800"></div>
+          {isCondensed ? (
+            // Vue condensée
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {processSteps.map((step, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  viewport={{ once: true }}
-                  className="relative pl-16"
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer`}
+                  onClick={() => {
+                    setActiveStep(index);
+                    setIsCondensed(false);
+                  }}
                 >
-                  <div
-                    className={`absolute left-[30px] top-0 w-0.5 h-full bg-gradient-to-b ${step.color}`}
-                  />
-                  <div
-                    className={`absolute left-4 top-0 w-10 h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center text-white shadow-lg shadow-blue-500/20 z-10 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
-                    onClick={() => setActiveStep(index)}
-                  >
-                    {index < activeStep ? (
-                      <CheckCircle2 className="w-6 h-6" />
-                    ) : (
-                      step.icon
-                    )}
+                  <div className={`w-10 h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center mb-3`}>
+                    {step.icon}
                   </div>
-                  <motion.div 
-                    className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-6 border ${index === activeStep ? `border-blue-500/50 shadow-lg shadow-blue-500/20` : 'border-gray-800'} transition-all duration-300 cursor-pointer`}
-                    whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                    onClick={toggleExample}
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300">
-                        {step.title}
-                      </h3>
-                      <span className="text-xs font-mono bg-gray-800 px-2 py-1 rounded-full text-gray-400">
-                        Étape {index + 1}/{processSteps.length}
-                      </span>
-                    </div>
-                    <p className="text-gray-300 leading-relaxed mb-4">{step.description}</p>
-                    
-                    {/* Durée estimée */}
-                    <div className="mb-4">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-gray-400">Durée estimée:</span>
-                        <span className="text-xs font-semibold text-white">
-                          {step.duration.min === step.duration.max ? 
-                            `${step.duration.min} ${step.duration.unit}` : 
-                            step.duration.min === 0 ? 
-                              step.duration.unit : 
-                              `${step.duration.min}-${step.duration.max} ${step.duration.unit}`}
-                        </span>
+                  <h3 className="text-sm font-bold mb-2">{step.title}</h3>
+                  <div className="flex flex-wrap gap-1">
+                    {step.deliverables.map((deliverable, idx) => (
+                      <div key={idx} className="text-gray-400 hover:text-white transition-colors">
+                        {deliverable.icon}
                       </div>
-                      {step.duration.min !== 0 && (
-                        <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full bg-gradient-to-r ${step.color}`} 
-                            style={{ 
-                              width: `${(step.duration.min / 8) * 100}%`,
-                              opacity: 0.6
-                            }}
-                          ></div>
-                          <div 
-                            className={`h-full bg-gradient-to-r ${step.color} -mt-1.5`} 
-                            style={{ 
-                              width: `${(step.duration.max / 8) * 100}%` 
-                            }}
-                          ></div>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <AnimatePresence>
-                      {showExample && index === activeStep && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          exit={{ opacity: 0, height: 0 }}
-                          className="mt-4 pt-4 border-t border-gray-700"
-                        >
-                          <p className="text-sm text-blue-300 italic">{step.example}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    <button 
-                      className={`mt-4 text-sm text-blue-400 hover:text-blue-300 flex items-center ${showExample && index === activeStep ? 'opacity-100' : 'opacity-70'}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (index === activeStep) toggleExample();
-                      }}
-                    >
-                      {showExample && index === activeStep ? 'Masquer l\'exemple' : 'Voir un exemple'} 
-                    </button>
-                  </motion.div>
+                    ))}
+                  </div>
                 </motion.div>
               ))}
             </div>
           ) : (
-            // Version desktop : Timeline horizontale améliorée
+            // Vue détaillée existante
             <div className="relative pt-20">
               {/* Ligne de progression principale */}
               <div className="absolute top-8 left-0 w-full h-1 bg-gray-800">
@@ -409,6 +428,27 @@ const ProcessSection: React.FC = () => {
                   <ChevronRight className="w-6 h-6" />
                 </button>
               </div>
+
+              {/* Ajout des livrables dans la vue détaillée */}
+              <motion.div
+                variants={deliverablesVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-4 pt-4 border-t border-gray-700"
+              >
+                <h4 className="text-sm font-semibold mb-3 text-gray-300">Livrables:</h4>
+                <div className="flex flex-wrap gap-3">
+                  {processSteps[activeStep].deliverables.map((deliverable, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 bg-gray-800/50 px-3 py-1.5 rounded-full text-sm"
+                    >
+                      {deliverable.icon}
+                      <span className="text-gray-300">{deliverable.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
             </div>
           )}
         </div>
