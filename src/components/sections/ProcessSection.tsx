@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from "framer-motion";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import {
   Code2,
@@ -141,36 +141,42 @@ const ProcessSection: React.FC = () => {
   const [showExample, setShowExample] = useState<boolean>(false);
   const [isCondensed, setIsCondensed] = useState<boolean>(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
 
-  const progressScale = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const smoothProgress = useSpring(progressScale, { damping: 20, stiffness: 100 });
-
-  // Simplifié pour de meilleures performances
+  // Variants pour les animations de transition
   const cardVariants = {
     hidden: { 
       opacity: 0,
-      y: 20
+      y: 20,
+      scale: 0.95
     },
     visible: { 
       opacity: 1,
       y: 0,
+      scale: 1,
       transition: {
-        duration: 0.3
+        type: "spring",
+        stiffness: 200,
+        damping: 20
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      scale: 0.95,
+      transition: {
+        duration: 0.2
       }
     }
   };
 
   const deliverablesVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0, height: 0 },
     visible: { 
       opacity: 1,
+      height: "auto",
       transition: {
-        duration: 0.2
+        duration: 0.3,
+        ease: "easeOut"
       }
     }
   };
@@ -190,17 +196,23 @@ const ProcessSection: React.FC = () => {
   };
 
   return (
-    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process" ref={containerRef}>
-      {/* Fond simplifié et statique */}
+    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process">
+      {/* Fond avec effet de gradient */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        {/* Titre simplifié */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-16 gap-4">
-          <div className="text-center flex-1">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="text-center flex-1"
+          >
             <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
               Notre Processus
             </h2>
@@ -208,11 +220,11 @@ const ProcessSection: React.FC = () => {
             <p className="text-base md:text-xl max-w-3xl mx-auto text-gray-300">
               Une méthodologie éprouvée pour transformer vos idées en réalité
             </p>
-          </div>
+          </motion.div>
           
           <button
             onClick={() => setIsCondensed(!isCondensed)}
-            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-300"
           >
             {isCondensed ? (
               <>
@@ -230,15 +242,15 @@ const ProcessSection: React.FC = () => {
 
         <div className="max-w-7xl mx-auto">
           {isCondensed ? (
+            // Vue condensée
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {processSteps.map((step, index) => (
                 <motion.div
                   key={index}
                   variants={cardVariants}
                   initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-800 hover:border-blue-500/50 transition-colors cursor-pointer"
+                  animate="visible"
+                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer`}
                   onClick={() => {
                     setActiveStep(index);
                     setIsCondensed(false);
@@ -252,10 +264,7 @@ const ProcessSection: React.FC = () => {
                   <h3 className="text-xs md:text-sm font-bold mb-2">{step.title}</h3>
                   <div className="flex flex-wrap gap-1">
                     {step.deliverables.map((deliverable, idx) => (
-                      <div 
-                        key={idx} 
-                        className="text-gray-400 hover:text-white transition-colors"
-                      >
+                      <div key={idx} className="text-gray-400 hover:text-white transition-colors">
                         {React.cloneElement(deliverable.icon as React.ReactElement, {
                           className: "w-3 h-3 md:w-4 md:h-4"
                         })}
@@ -266,41 +275,55 @@ const ProcessSection: React.FC = () => {
               ))}
             </div>
           ) : (
+            // Vue détaillée
             <div className="relative pt-16 md:pt-20">
-              {/* Ligne de progression simplifiée */}
+              {/* Ligne de progression principale */}
               <div className="absolute top-6 md:top-8 left-0 w-full h-0.5 md:h-1 bg-gray-800">
-                <div
+                <motion.div
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-blue-600"
-                  style={{ width: `${(activeStep / (processSteps.length - 1)) * 100}%` }}
+                  initial={{ width: "0%" }}
+                  whileInView={{ width: `${(activeStep / (processSteps.length - 1)) * 100}%` }}
+                  transition={{ duration: 0.5 }}
                 />
               </div>
 
-              {/* Points de progression simplifiés */}
+              {/* Indicateur de progression */}
               <div className="absolute top-0 left-0 w-full flex justify-between mb-4 md:mb-6">
                 {processSteps.map((_, index) => (
                   <div 
                     key={index} 
                     className={`relative flex items-center justify-center ${index <= activeStep ? 'text-blue-400' : 'text-gray-600'}`}
                   >
-                    <span className="text-[10px] md:text-xs font-mono">
-                      {index + 1}
-                    </span>
+                    <span className="text-[10px] md:text-xs font-mono">{index + 1}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Contenu des étapes */}
+              {/* Points de connexion et contenus */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6">
                 {processSteps.map((step, index) => (
-                  <div
+                  <motion.div
                     key={index}
-                    className={`relative ${activeStep === index ? 'block' : 'hidden md:block'}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    viewport={{ once: true }}
+                    className={`relative group ${activeStep === index ? 'block' : 'hidden md:block'}`}
+                    onMouseEnter={() => setActiveStep(index)}
                   >
-                    {/* Point de connexion simplifié */}
-                    <div
+                    {/* Point de connexion */}
+                    <motion.div
                       className={`absolute top-[-36px] md:top-[-48px] left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${
                         step.color
-                      } flex items-center justify-center cursor-pointer z-20 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
+                      } flex items-center justify-center cursor-pointer transition-all duration-300 group-hover:scale-110 shadow-lg shadow-blue-500/20 z-20 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
+                      onClick={() => setActiveStep(index)}
+                      animate={index === activeStep ? {
+                        boxShadow: ['0 0 0 0px rgba(59, 130, 246, 0.5)', '0 0 0 8px rgba(59, 130, 246, 0)'],
+                      } : {}}
+                      transition={index === activeStep ? {
+                        repeat: Infinity,
+                        duration: 2,
+                      } : {}}
                     >
                       {index < activeStep ? (
                         <CheckCircle2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
@@ -309,14 +332,19 @@ const ProcessSection: React.FC = () => {
                           className: "w-5 h-5 md:w-8 md:h-8"
                         })
                       )}
-                    </div>
+                    </motion.div>
 
-                    {/* Ligne de connexion */}
+                    {/* Ligne verticale de connexion */}
                     <div className={`absolute top-[-28px] md:top-[-36px] left-1/2 transform -translate-x-1/2 w-0.5 h-6 md:h-8 bg-gradient-to-b ${step.color}`} />
 
-                    {/* Carte de contenu */}
-                    <div
-                      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 md:p-6 transition-colors border cursor-pointer ${
+                    {/* Contenu */}
+                    <motion.div
+                      initial={false}
+                      animate={{
+                        scale: activeStep === index ? 1.02 : 1,
+                        y: activeStep === index ? -2 : 0,
+                      }}
+                      className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 md:p-6 transition-all duration-300 border cursor-pointer ${
                         activeStep === index
                           ? "border-blue-500/50 shadow-lg shadow-blue-500/20"
                           : "border-gray-800"
@@ -335,7 +363,7 @@ const ProcessSection: React.FC = () => {
                         {step.description}
                       </p>
 
-                      {/* Durée estimée simplifiée */}
+                      {/* Durée estimée */}
                       <div className="mb-3">
                         <div className="flex justify-between items-center mb-1">
                           <span className="text-[10px] md:text-xs text-gray-400">Durée:</span>
@@ -349,10 +377,17 @@ const ProcessSection: React.FC = () => {
                         </div>
                         {step.duration.min !== 0 && (
                           <div className="w-full h-1 md:h-1.5 bg-gray-800 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full bg-gradient-to-r ${step.color}`}
-                              style={{ width: `${(step.duration.max / 8) * 100}%` }}
-                            />
+                            <motion.div 
+                              className={`h-full bg-gradient-to-r ${step.color}`} 
+                              initial={{ width: 0 }}
+                              animate={{ 
+                                width: `${(step.duration.max / 8) * 100}%`,
+                              }}
+                              transition={{
+                                duration: 1,
+                                delay: index * 0.1
+                              }}
+                            ></motion.div>
                           </div>
                         )}
                       </div>
@@ -360,9 +395,9 @@ const ProcessSection: React.FC = () => {
                       <AnimatePresence>
                         {showExample && index === activeStep && (
                           <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
                             className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-700"
                           >
                             <p className="text-xs md:text-sm text-blue-300 italic">{step.example}</p>
@@ -379,37 +414,40 @@ const ProcessSection: React.FC = () => {
                       >
                         {showExample && index === activeStep ? 'Masquer l\'exemple' : 'Voir un exemple'} 
                       </button>
-                    </div>
-                  </div>
+                    </motion.div>
+                  </motion.div>
                 ))}
               </div>
 
-              {/* Boutons de navigation simplifiés */}
+              {/* Boutons de navigation */}
               <div className="flex justify-center mt-8 md:mt-12 gap-3 md:gap-4">
                 <button
                   onClick={handlePrev}
-                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-colors"
+                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
                   <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
                 <button
                   onClick={handleNext}
-                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-colors"
+                  className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
                   <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
                 </button>
               </div>
 
-              {/* Section des livrables simplifiée */}
-              <div className="mt-4 pt-4 border-t border-gray-700">
-                <h4 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-gray-300">
-                  Livrables:
-                </h4>
+              {/* Livrables */}
+              <motion.div
+                variants={deliverablesVariants}
+                initial="hidden"
+                animate="visible"
+                className="mt-4 pt-4 border-t border-gray-700"
+              >
+                <h4 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-gray-300">Livrables:</h4>
                 <div className="flex flex-wrap gap-2 md:gap-3">
                   {processSteps[activeStep].deliverables.map((deliverable, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-1.5 md:gap-2 bg-gray-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm hover:bg-gray-700/50 transition-colors"
+                      className="flex items-center gap-1.5 md:gap-2 bg-gray-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm"
                     >
                       {React.cloneElement(deliverable.icon as React.ReactElement, {
                         className: "w-3 h-3 md:w-4 md:h-4"
@@ -418,7 +456,7 @@ const ProcessSection: React.FC = () => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </div>
           )}
         </div>
