@@ -124,15 +124,16 @@ const AboutSection: React.FC<AboutSectionProps> = ({
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h3 className="text-3xl font-bold mb-2 text-blue-400">
+          <h3 className="text-3xl font-bold mb-4 text-white">
             Notre Équipe
           </h3>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Les esprits créatifs derrière les solutions innovantes de NourX
+          <div className="w-16 h-0.5 bg-blue-500 mx-auto mb-6"></div>
+          <p className="text-gray-400 max-w-2xl mx-auto mb-12">
+            Les talents qui font de NourX une agence d'exception
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto px-4">
           {teamMembers.map((member, index) => (
             <motion.div
               key={index}
@@ -140,26 +141,24 @@ const AboutSection: React.FC<AboutSectionProps> = ({
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 * index }}
               viewport={{ once: true }}
-              className="bg-gray-900 rounded-xl p-6 text-center border border-gray-800 hover:border-blue-500 transition-all duration-300"
+              className="group"
             >
-              <div className="w-24 h-24 mx-auto mb-4 overflow-hidden rounded-full border-2 border-blue-500">
+              <div className="relative overflow-hidden rounded-lg aspect-square mb-4">
                 <img
                   src={member.image}
                   alt={member.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </div>
-              <h4 className="text-xl font-bold text-white mb-1">
-                {member.name}
-              </h4>
-              <p className="text-blue-400 mb-4">{member.role}</p>
-              <Button
-                variant="outline"
-                size="sm"
-                className="border-blue-500 text-blue-400 hover:bg-blue-500 hover:text-white"
-              >
-                Voir le Profil
-              </Button>
+              <div className="text-center">
+                <h4 className="text-xl font-semibold text-white mb-1">
+                  {member.name}
+                </h4>
+                <p className="text-blue-400 text-sm">
+                  {member.role}
+                </p>
+              </div>
             </motion.div>
           ))}
         </div>
