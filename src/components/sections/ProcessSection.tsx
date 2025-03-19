@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform, useSpring, useInView } from "framer-motion";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import {
   Code2,
@@ -141,30 +141,42 @@ const ProcessSection: React.FC = () => {
   const [showExample, setShowExample] = useState<boolean>(false);
   const [isCondensed, setIsCondensed] = useState<boolean>(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
 
-  // Variants pour les animations de transition
+  const progressScale = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const smoothProgress = useSpring(progressScale, { damping: 20, stiffness: 100 });
+
+  // Animation variants pour les cartes
   const cardVariants = {
     hidden: { 
       opacity: 0,
-      y: 20,
-      scale: 0.95
+      y: 50,
+      scale: 0.95,
+      filter: "blur(10px)"
     },
-    visible: { 
+    visible: (i: number) => ({ 
       opacity: 1,
       y: 0,
       scale: 1,
+      filter: "blur(0px)",
       transition: {
         type: "spring",
         stiffness: 200,
-        damping: 20
+        damping: 20,
+        delay: i * 0.1
       }
-    },
-    exit: {
-      opacity: 0,
-      y: -20,
-      scale: 0.95,
+    }),
+    hover: {
+      scale: 1.05,
+      y: -10,
       transition: {
-        duration: 0.2
+        type: "spring",
+        stiffness: 400,
+        damping: 10
       }
     }
   };
@@ -196,33 +208,69 @@ const ProcessSection: React.FC = () => {
   };
 
   return (
-    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process">
-      {/* Fond avec effet de gradient */}
+    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process" ref={containerRef}>
+      {/* Fond avec effet de gradient amélioré */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
-        <div className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+        <motion.div 
+          className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl"
+          style={{
+            x: useTransform(scrollYProgress, [0, 1], [0, 100]),
+            scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.2, 1])
+          }}
+        />
+        <motion.div 
+          className="absolute top-0 right-1/4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl"
+          style={{
+            x: useTransform(scrollYProgress, [0, 1], [0, -100]),
+            scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.3, 1])
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-0 left-1/3 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, 100]),
+            scale: useTransform(scrollYProgress, [0, 0.5, 1], [1, 1.4, 1])
+          }}
+        />
       </div>
 
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-16 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center flex-1"
-          >
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+        {/* Titre avec animation au scroll */}
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, type: "spring" }}
+          viewport={{ once: true, margin: "-100px" }}
+          className="flex flex-col md:flex-row justify-between items-center mb-8 md:mb-16 gap-4"
+        >
+          <div className="text-center flex-1">
+            <motion.h2 
+              className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600"
+              style={{
+                backgroundPositionX: useTransform(scrollYProgress, [0, 1], ["0%", "100%"])
+              }}
+            >
               Notre Processus
-            </h2>
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 md:mb-8"></div>
-            <p className="text-base md:text-xl max-w-3xl mx-auto text-gray-300">
+            </motion.h2>
+            <motion.div 
+              className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 md:mb-8"
+              style={{
+                scaleX: useTransform(scrollYProgress, [0, 0.2], [0, 1])
+              }}
+            />
+            <motion.p 
+              className="text-base md:text-xl max-w-3xl mx-auto text-gray-300"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
               Une méthodologie éprouvée pour transformer vos idées en réalité
-            </p>
-          </motion.div>
+            </motion.p>
+          </div>
           
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setIsCondensed(!isCondensed)}
             className="flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full bg-gray-800 hover:bg-gray-700 transition-all duration-300"
           >
@@ -237,86 +285,105 @@ const ProcessSection: React.FC = () => {
                 <span className="text-xs md:text-sm">Vue condensée</span>
               </>
             )}
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         <div className="max-w-7xl mx-auto">
           {isCondensed ? (
-            // Vue condensée
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {processSteps.map((step, index) => (
                 <motion.div
                   key={index}
+                  custom={index}
                   variants={cardVariants}
                   initial="hidden"
-                  animate="visible"
-                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer`}
+                  whileInView="visible"
+                  whileHover="hover"
+                  viewport={{ once: true, margin: "-50px" }}
+                  className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-gray-800 hover:border-blue-500/50 transition-all duration-300 cursor-pointer group`}
                   onClick={() => {
                     setActiveStep(index);
                     setIsCondensed(false);
                   }}
                 >
-                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center mb-2 md:mb-3`}>
+                  <motion.div 
+                    className={`w-8 h-8 md:w-10 md:h-10 rounded-full bg-gradient-to-r ${step.color} flex items-center justify-center mb-2 md:mb-3 group-hover:shadow-lg group-hover:shadow-blue-500/20`}
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     {React.cloneElement(step.icon as React.ReactElement, {
                       className: "w-5 h-5 md:w-6 md:h-6"
                     })}
-                  </div>
-                  <h3 className="text-xs md:text-sm font-bold mb-2">{step.title}</h3>
+                  </motion.div>
+                  <h3 className="text-xs md:text-sm font-bold mb-2 group-hover:text-blue-400 transition-colors">{step.title}</h3>
                   <div className="flex flex-wrap gap-1">
                     {step.deliverables.map((deliverable, idx) => (
-                      <div key={idx} className="text-gray-400 hover:text-white transition-colors">
+                      <motion.div 
+                        key={idx} 
+                        className="text-gray-400 hover:text-white transition-colors"
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                      >
                         {React.cloneElement(deliverable.icon as React.ReactElement, {
                           className: "w-3 h-3 md:w-4 md:h-4"
                         })}
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </motion.div>
               ))}
             </div>
           ) : (
-            // Vue détaillée
             <div className="relative pt-16 md:pt-20">
-              {/* Ligne de progression principale */}
+              {/* Ligne de progression principale avec animation au scroll */}
               <div className="absolute top-6 md:top-8 left-0 w-full h-0.5 md:h-1 bg-gray-800">
                 <motion.div
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-blue-400 to-blue-600"
-                  initial={{ width: "0%" }}
-                  whileInView={{ width: `${(activeStep / (processSteps.length - 1)) * 100}%` }}
-                  transition={{ duration: 0.5 }}
+                  style={{ width: smoothProgress }}
                 />
               </div>
 
-              {/* Indicateur de progression */}
+              {/* Points de progression améliorés */}
               <div className="absolute top-0 left-0 w-full flex justify-between mb-4 md:mb-6">
                 {processSteps.map((_, index) => (
-                  <div 
+                  <motion.div 
                     key={index} 
                     className={`relative flex items-center justify-center ${index <= activeStep ? 'text-blue-400' : 'text-gray-600'}`}
+                    whileHover={{ scale: 1.2 }}
                   >
-                    <span className="text-[10px] md:text-xs font-mono">{index + 1}</span>
-                  </div>
+                    <motion.span 
+                      className="text-[10px] md:text-xs font-mono"
+                      animate={{
+                        scale: index === activeStep ? [1, 1.2, 1] : 1
+                      }}
+                      transition={{
+                        duration: 1,
+                        repeat: index === activeStep ? Infinity : 0,
+                        repeatType: "reverse"
+                      }}
+                    >
+                      {index + 1}
+                    </motion.span>
+                  </motion.div>
                 ))}
               </div>
 
-              {/* Points de connexion et contenus */}
+              {/* Contenu des étapes avec animations améliorées */}
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-6">
                 {processSteps.map((step, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                    viewport={{ once: true }}
+                    viewport={{ once: true, margin: "-50px" }}
                     className={`relative group ${activeStep === index ? 'block' : 'hidden md:block'}`}
-                    onMouseEnter={() => setActiveStep(index)}
                   >
-                    {/* Point de connexion */}
+                    {/* Point de connexion avec animation */}
                     <motion.div
                       className={`absolute top-[-36px] md:top-[-48px] left-1/2 transform -translate-x-1/2 w-8 h-8 md:w-12 md:h-12 rounded-full bg-gradient-to-r ${
                         step.color
-                      } flex items-center justify-center cursor-pointer transition-all duration-300 group-hover:scale-110 shadow-lg shadow-blue-500/20 z-20 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
-                      onClick={() => setActiveStep(index)}
+                      } flex items-center justify-center cursor-pointer group-hover:scale-110 shadow-lg shadow-blue-500/20 z-20 ${index < activeStep ? 'ring-2 ring-white' : ''}`}
+                      whileHover={{ scale: 1.1 }}
                       animate={index === activeStep ? {
                         boxShadow: ['0 0 0 0px rgba(59, 130, 246, 0.5)', '0 0 0 8px rgba(59, 130, 246, 0)'],
                       } : {}}
@@ -326,24 +393,41 @@ const ProcessSection: React.FC = () => {
                       } : {}}
                     >
                       {index < activeStep ? (
-                        <CheckCircle2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                        >
+                          <CheckCircle2 className="w-5 h-5 md:w-8 md:h-8 text-white" />
+                        </motion.div>
                       ) : (
-                        React.cloneElement(step.icon as React.ReactElement, {
-                          className: "w-5 h-5 md:w-8 md:h-8"
-                        })
+                        <motion.div
+                          whileHover={{ rotate: 360 }}
+                          transition={{ duration: 0.5 }}
+                        >
+                          {React.cloneElement(step.icon as React.ReactElement, {
+                            className: "w-5 h-5 md:w-8 md:h-8"
+                          })}
+                        </motion.div>
                       )}
                     </motion.div>
 
-                    {/* Ligne verticale de connexion */}
-                    <div className={`absolute top-[-28px] md:top-[-36px] left-1/2 transform -translate-x-1/2 w-0.5 h-6 md:h-8 bg-gradient-to-b ${step.color}`} />
+                    {/* Ligne de connexion animée */}
+                    <motion.div 
+                      className={`absolute top-[-28px] md:top-[-36px] left-1/2 transform -translate-x-1/2 w-0.5 h-6 md:h-8 bg-gradient-to-b ${step.color}`}
+                      initial={{ scaleY: 0 }}
+                      animate={{ scaleY: 1 }}
+                      transition={{ duration: 0.5 }}
+                    />
 
-                    {/* Contenu */}
+                    {/* Carte de contenu avec animations */}
                     <motion.div
                       initial={false}
                       animate={{
                         scale: activeStep === index ? 1.02 : 1,
                         y: activeStep === index ? -2 : 0,
                       }}
+                      whileHover={{ y: -5 }}
                       className={`bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 md:p-6 transition-all duration-300 border cursor-pointer ${
                         activeStep === index
                           ? "border-blue-500/50 shadow-lg shadow-blue-500/20"
@@ -419,41 +503,57 @@ const ProcessSection: React.FC = () => {
                 ))}
               </div>
 
-              {/* Boutons de navigation */}
+              {/* Boutons de navigation améliorés */}
               <div className="flex justify-center mt-8 md:mt-12 gap-3 md:gap-4">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={handlePrev}
                   className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
                   <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={handleNext}
                   className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 rounded-full p-2 md:p-3 hover:border-blue-500 transition-all duration-300"
                 >
                   <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
-                </button>
+                </motion.button>
               </div>
 
-              {/* Livrables */}
+              {/* Section des livrables améliorée */}
               <motion.div
                 variants={deliverablesVariants}
                 initial="hidden"
                 animate="visible"
                 className="mt-4 pt-4 border-t border-gray-700"
               >
-                <h4 className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-gray-300">Livrables:</h4>
+                <motion.h4 
+                  className="text-xs md:text-sm font-semibold mb-2 md:mb-3 text-gray-300"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  Livrables:
+                </motion.h4>
                 <div className="flex flex-wrap gap-2 md:gap-3">
                   {processSteps[activeStep].deliverables.map((deliverable, idx) => (
-                    <div
+                    <motion.div
                       key={idx}
-                      className="flex items-center gap-1.5 md:gap-2 bg-gray-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm"
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: idx * 0.1 }}
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      className="flex items-center gap-1.5 md:gap-2 bg-gray-800/50 px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs md:text-sm hover:bg-gray-700/50 transition-colors"
                     >
-                      {React.cloneElement(deliverable.icon as React.ReactElement, {
-                        className: "w-3 h-3 md:w-4 md:h-4"
-                      })}
+                      <motion.div whileHover={{ rotate: 360 }} transition={{ duration: 0.5 }}>
+                        {React.cloneElement(deliverable.icon as React.ReactElement, {
+                          className: "w-3 h-3 md:w-4 md:h-4"
+                        })}
+                      </motion.div>
                       <span className="text-gray-300">{deliverable.name}</span>
-                    </div>
+                    </motion.div>
                   ))}
                 </div>
               </motion.div>
