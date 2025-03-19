@@ -49,8 +49,8 @@ const ContactSection = ({
   };
 
   return (
-    <section className="w-full py-20 bg-black text-white" id="contact">
-      <div className="container mx-auto px-4 max-w-6xl">
+    <section className="w-full py-20 relative overflow-hidden animate-on-scroll" id="contact">
+      <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -68,7 +68,7 @@ const ContactSection = ({
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="bg-gray-900 p-8 rounded-lg border border-blue-900 shadow-lg shadow-blue-900/20"
+            className="bg-gray-900/50 backdrop-blur-sm p-8 rounded-lg border border-gray-800 shadow-lg shadow-blue-900/20"
           >
             <div className="space-y-6">
               <div>

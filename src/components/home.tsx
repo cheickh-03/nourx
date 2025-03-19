@@ -10,6 +10,7 @@ import Footer from "./layout/Footer";
 import MouseFollower from "./animations/MouseFollower";
 import ScrollProgress from "./animations/ScrollProgress";
 import FloatingShapes from "./animations/FloatingShapes";
+import BackgroundGradient from "./animations/BackgroundGradient";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -30,97 +31,53 @@ const Home: React.FC = () => {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Initialisation de GSAP
   useEffect(() => {
-    // N'initialiser qu'une seule fois
-    if (isInitialized) return;
-    
-    // Marquer comme initialisé immédiatement
-    setIsInitialized(true);
-    
-    try {
-      // Enregistrer les plugins GSAP
-      if (typeof gsap !== 'undefined' && gsap.registerPlugin) {
+    if (!isInitialized) {
+      try {
         gsap.registerPlugin(ScrollTrigger);
-        console.log('GSAP et ScrollTrigger enregistrés avec succès');
-      } else {
-        console.warn('GSAP ou ScrollTrigger non disponible');
-        return; // Ne pas continuer si GSAP n'est pas disponible
-      }
-      
-      // Utiliser un délai pour s'assurer que le DOM est chargé
-      const timer = setTimeout(() => {
-        try {
-          // Initialiser des animations très basiques
-          const sections = document.querySelectorAll("section");
-          console.log('Sections trouvées pour animation:', sections.length);
+        
+        // Délai pour s'assurer que le DOM est prêt
+        const timer = setTimeout(() => {
+          const sections = document.querySelectorAll('.animate-on-scroll');
           
           sections.forEach((section) => {
-            gsap.set(section, { opacity: 0, y: 20 });
-            
-            ScrollTrigger.create({
-              trigger: section,
-              start: "top 85%",
-              onEnter: () => {
-                gsap.to(section, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.6,
-                  ease: "power2.out",
-                });
+            gsap.fromTo(
+              section,
+              {
+                opacity: 0,
+                y: 50,
               },
-              once: true
-            });
+              {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                scrollTrigger: {
+                  trigger: section,
+                  start: 'top 80%',
+                  end: 'bottom 20%',
+                  toggleActions: 'play none none reverse',
+                },
+              }
+            );
           });
           
-          // Animation simplifiée pour les éléments marqués
-          const elementsToAnimate = document.querySelectorAll(".animate-on-scroll, .animate-on-scroll-important");
-          console.log('Éléments à animer trouvés:', elementsToAnimate.length);
-          
-          elementsToAnimate.forEach((element) => {
-            gsap.set(element, { opacity: 0, y: 20 });
-            
-            ScrollTrigger.create({
-              trigger: element,
-              start: "top 85%",
-              onEnter: () => {
-                gsap.to(element, {
-                  opacity: 1,
-                  y: 0,
-                  duration: 0.6,
-                  ease: "power2.out",
-                });
-              },
-              once: true
-            });
-          });
-        } catch (error) {
-          console.error("Erreur lors de l'animation:", error);
-        }
-      }, 300); // Délai uniforme pour tous les appareils
-      
-      return () => clearTimeout(timer);
-    } catch (error) {
-      console.error("Erreur lors de l'initialisation de GSAP:", error);
+          setIsInitialized(true);
+        }, 1000);
+        
+        return () => clearTimeout(timer);
+      } catch (error) {
+        console.error('Error initializing animations:', error);
+        setIsInitialized(true); // Mark as initialized even if there's an error
+      }
     }
   }, [isInitialized]);
 
-  // Nettoyer les animations lors du démontage
-  useEffect(() => {
-    return () => {
-      try {
-        if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getAll) {
-          ScrollTrigger.getAll().forEach((trigger) => {
-            if (trigger && trigger.kill) trigger.kill();
-          });
-        }
-      } catch (error) {
-        console.error("Erreur lors du nettoyage des animations:", error);
-      }
-    };
-  }, []);
-
   const handleCtaClick = () => {
-    navigate("/projet");
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   console.log('Home - isMobile:', isMobile);
@@ -137,12 +94,13 @@ const Home: React.FC = () => {
   console.log('Rendu de Footer');
 
   return (
-    <div className="bg-black min-h-screen overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden">
+      <BackgroundGradient />
       <MouseFollower />
       <ScrollProgress />
       <FloatingShapes />
       <Navbar onCtaClick={handleCtaClick} />
-      <main>
+      <main className="relative">
         <HeroSection onCtaClick={handleCtaClick} />
         <ServicesSection />
         <ProcessSection />

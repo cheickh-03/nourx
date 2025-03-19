@@ -111,14 +111,8 @@ const ServicesSection = ({
   return (
     <section
       ref={sectionRef}
-      className="w-full py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-16 bg-black text-white min-h-[600px] md:min-h-[800px] relative animate-on-scroll"
+      className="w-full py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-16 relative animate-on-scroll"
     >
-      {/* Fond simplifié pour tous les appareils */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-blue-600/5 blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-60 h-60 rounded-full bg-indigo-500/5 blur-3xl" />
-      </div>
-
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 sm:mb-16">
           {isMobile ? (
