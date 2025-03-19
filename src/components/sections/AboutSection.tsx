@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 
@@ -47,6 +47,31 @@ const AboutSection: React.FC<AboutSectionProps> = ({
     },
   ],
 }) => {
+  useEffect(() => {
+    const observer = new PerformanceObserver((list) => {
+      list.getEntries().forEach((entry) => {
+        console.log('Performance Entry:', {
+          name: entry.name,
+          duration: entry.duration,
+          startTime: entry.startTime,
+          entryType: entry.entryType
+        });
+      });
+    });
+
+    observer.observe({ entryTypes: ['longtask', 'paint', 'layout-shift'] });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const logAnimationStart = (component: string) => {
+    console.log(`Animation start: ${component}`, performance.now());
+  };
+
+  const logAnimationComplete = (component: string) => {
+    console.log(`Animation complete: ${component}`, performance.now());
+  };
+
   return (
     <section className="w-full py-24 bg-black text-white" id="about">
       <div className="container mx-auto px-4 md:px-6">
@@ -55,6 +80,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          onAnimationStart={() => logAnimationStart('header')}
+          onAnimationComplete={() => logAnimationComplete('header')}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-blue-400">
@@ -72,6 +99,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
+            onAnimationStart={() => logAnimationStart('mission')}
+            onAnimationComplete={() => logAnimationComplete('mission')}
             className="relative"
           >
             <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-blue-400 opacity-20 blur-xl rounded-xl"></div>
@@ -88,6 +117,8 @@ const AboutSection: React.FC<AboutSectionProps> = ({
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             viewport={{ once: true }}
+            onAnimationStart={() => logAnimationStart('values')}
+            onAnimationComplete={() => logAnimationComplete('values')}
           >
             <h3 className="text-2xl font-bold mb-6 text-blue-400">
               Nos Valeurs
