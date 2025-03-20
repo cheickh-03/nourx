@@ -19,26 +19,33 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Détection directe du mobile pour éviter les problèmes avec le hook
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
     
     checkMobile();
-    window.addEventListener('resize', checkMobile);
+    const debouncedResize = debounce(checkMobile, 250);
+    window.addEventListener('resize', debouncedResize);
     
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', debouncedResize);
   }, []);
 
-  // Initialisation de GSAP
+  // Debounce helper
+  function debounce(fn: Function, ms: number) {
+    let timer: NodeJS.Timeout;
+    return (...args: any[]) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), ms);
+    };
+  }
+
   useEffect(() => {
     if (!isInitialized) {
       try {
         gsap.registerPlugin(ScrollTrigger);
         
-        // Délai pour s'assurer que le DOM est prêt
-        const timer = setTimeout(() => {
+        const initAnimations = () => {
           const sections = document.querySelectorAll('.animate-on-scroll');
           
           sections.forEach((section) => {
@@ -46,29 +53,30 @@ const Home: React.FC = () => {
               section,
               {
                 opacity: 0,
-                y: 50,
+                y: 20,
               },
               {
                 opacity: 1,
                 y: 0,
-                duration: 1,
+                duration: 0.5,
                 scrollTrigger: {
                   trigger: section,
-                  start: 'top 80%',
-                  end: 'bottom 20%',
+                  start: 'top 85%',
                   toggleActions: 'play none none reverse',
                 },
               }
             );
           });
-          
-          setIsInitialized(true);
-        }, 1000);
+        };
+
+        // Délai réduit pour l'initialisation
+        const timer = setTimeout(initAnimations, 500);
         
+        setIsInitialized(true);
         return () => clearTimeout(timer);
       } catch (error) {
         console.error('Error initializing animations:', error);
-        setIsInitialized(true); // Mark as initialized even if there's an error
+        setIsInitialized(true);
       }
     }
   }, [isInitialized]);
@@ -96,9 +104,9 @@ const Home: React.FC = () => {
   return (
     <div className="relative min-h-screen overflow-x-hidden">
       <BackgroundGradient />
-      <MouseFollower />
+      {!isMobile && <MouseFollower />}
       <ScrollProgress />
-      <FloatingShapes />
+      {!isMobile && <FloatingShapes />}
       <Navbar onCtaClick={handleCtaClick} />
       <main className="relative">
         <HeroSection onCtaClick={handleCtaClick} />
