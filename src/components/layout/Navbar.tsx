@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import MobileMenu from "./MobileMenu";
+import { Menu, X, ChevronDown } from "lucide-react";
 
 interface NavbarProps {
   transparent?: boolean;
@@ -12,6 +12,7 @@ const Navbar = ({
   transparent = false,
   onCtaClick = () => console.log("CTA clicked"),
 }: NavbarProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -76,9 +77,51 @@ const Navbar = ({
           </Button>
         </div>
 
-        {/* Mobile Menu Toggle - Visible uniquement sur mobile */}
+        {/* Mobile Navigation Toggle */}
         <div className="md:hidden">
-          <MobileMenu onCtaClick={onCtaClick} />
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-gray-300 hover:text-blue-500"
+          >
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation Menu */}
+      <div
+        className={cn(
+          "md:hidden bg-black/95 overflow-hidden transition-all duration-300",
+          isOpen ? "max-h-[400px] py-4" : "max-h-0",
+        )}
+      >
+        <div className="container mx-auto px-4">
+          <ul className="flex flex-col space-y-4">
+            {navItems.map((item) => (
+              <li key={item.name}>
+                <a
+                  href={item.href}
+                  className="text-gray-300 hover:text-blue-500 transition-colors duration-300 block py-2 text-lg font-medium"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.name}
+                </a>
+              </li>
+            ))}
+            <li className="pt-2">
+              <Button
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md"
+                onClick={() => {
+                  setIsOpen(false);
+                  onCtaClick();
+                }}
+              >
+                Démarrer un Projet
+              </Button>
+            </li>
+          </ul>
         </div>
       </div>
     </nav>

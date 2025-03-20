@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { Button } from "../ui/button";
 
 interface AboutSectionProps {
-  id?: string;
   title?: string;
   description?: string;
   mission?: string;
@@ -12,7 +11,6 @@ interface AboutSectionProps {
 }
 
 const AboutSection: React.FC<AboutSectionProps> = ({
-  id = "about",
   title = "À Propos de NourX",
   description = "NourX est une agence digitale de pointe spécialisée dans le développement web, la conception d'applications et les solutions de marketing digital. Nous combinons expertise technique et innovation créative pour offrir des expériences digitales exceptionnelles.",
   mission = "Notre mission est de transformer les idées en solutions digitales puissantes qui stimulent la croissance des entreprises et l'engagement des utilisateurs grâce à une technologie et un design innovants.",
@@ -75,7 +73,7 @@ const AboutSection: React.FC<AboutSectionProps> = ({
   };
 
   return (
-    <section className="w-full py-24 bg-black text-white" id={id}>
+    <section className="w-full py-24 bg-black text-white" id="about">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

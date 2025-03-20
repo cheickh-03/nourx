@@ -6,7 +6,6 @@ import gsap from "gsap";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 interface HeroSectionProps {
-  id?: string;
   title?: string;
   secondTitle?: string;
   subtitle?: string;
@@ -15,7 +14,6 @@ interface HeroSectionProps {
 }
 
 const HeroSection = ({
-  id = "hero-section",
   title = "Transformez Votre Vision Digitale",
   secondTitle = "en Réalité",
   subtitle = "Agence de développement web spécialisée dans la création d'expériences numériques modernes, innovantes et performantes.",

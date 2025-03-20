@@ -41,18 +41,6 @@ interface ProcessStep {
   deliverables: Deliverable[];
 }
 
-interface ProcessSectionProps {
-  id?: string;
-  title?: string;
-  subtitle?: string;
-  steps?: {
-    number: number;
-    title: string;
-    description: string;
-    icon?: string;
-  }[];
-}
-
 const processSteps: ProcessStep[] = [
   {
     icon: <Lightbulb className="w-8 h-8" />,
@@ -148,14 +136,7 @@ const processSteps: ProcessStep[] = [
   },
 ];
 
-const ProcessSection: React.FC<ProcessSectionProps> = ({
-  id = "process",
-  title = "Notre Processus",
-  subtitle = "Une méthodologie éprouvée pour transformer vos idées en solutions digitales de qualité.",
-  steps = [
-    // ... existing steps ...
-  ]
-}) => {
+const ProcessSection: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showExample, setShowExample] = useState<boolean>(false);
   const [isCondensed, setIsCondensed] = useState<boolean>(false);
@@ -215,10 +196,7 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
   };
 
   return (
-    <section
-      id={id}
-      className="w-full py-20 bg-black text-white"
-    >
+    <section className="w-full py-12 md:py-24 bg-black text-white relative overflow-hidden" id="process">
       {/* Fond avec effet de gradient */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
@@ -236,11 +214,11 @@ const ProcessSection: React.FC<ProcessSectionProps> = ({
             className="text-center flex-1"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
-              {title}
+              Notre Processus
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-blue-600 mx-auto mb-4 md:mb-8"></div>
             <p className="text-base md:text-xl max-w-3xl mx-auto text-gray-300">
-              {subtitle}
+              Une méthodologie éprouvée pour transformer vos idées en réalité
             </p>
           </motion.div>
           
