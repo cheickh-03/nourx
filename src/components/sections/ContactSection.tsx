@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Send, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ButtonRipple from "@/components/ui/button-ripple";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/components/ui/select";
 
 interface ContactSectionProps {
+  id?: string;
   title?: string;
   subtitle?: string;
   formSubmitted?: boolean;
@@ -342,13 +344,15 @@ const ContactSection = ({
                   />
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center gap-2"
-                >
-                  <Send className="h-4 w-4" />
-                  Envoyer le message
-                </Button>
+                <div className="flex justify-end mt-6">
+                  <ButtonRipple
+                    size="lg"
+                    type="submit"
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium focus:ring-blue-500"
+                  >
+                    <Send className="mr-2 h-5 w-5" /> Envoyer le message
+                  </ButtonRipple>
+                </div>
               </form>
             )}
           </motion.div>

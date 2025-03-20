@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import ServiceCard from "../cards/ServiceCard";
+import InteractiveCard from "../cards/InteractiveCard";
 import { Separator } from "../ui/separator";
 import TextReveal from "../animations/TextReveal";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 
 interface ServicesProps {
+  id?: string;
   title?: string;
   subtitle?: string;
   services?: {
@@ -18,6 +19,7 @@ interface ServicesProps {
 }
 
 const ServicesSection = ({
+  id = "services",
   title = "Nos Services",
   subtitle = "Transformez vos idées en réalité digitale avec des solutions de pointe adaptées à vos besoins.",
   services = [
@@ -111,6 +113,7 @@ const ServicesSection = ({
   return (
     <section
       ref={sectionRef}
+      id={id}
       className="w-full py-12 sm:py-16 md:py-20 px-4 md:px-8 lg:px-16 bg-black text-white min-h-[600px] md:min-h-[800px] relative animate-on-scroll"
     >
       {/* Fond simplifié pour tous les appareils */}
@@ -148,9 +151,9 @@ const ServicesSection = ({
             <motion.div
               key={index}
               variants={itemVariants}
-              className="service-card transform-gpu w-full max-w-[320px]"
+              className="service-card transform-gpu w-full max-w-[320px] h-[320px]"
             >
-              <ServiceCard
+              <InteractiveCard
                 title={service.title}
                 description={service.description}
                 icon={service.icon}

@@ -10,6 +10,7 @@ import Footer from "./layout/Footer";
 import MouseFollower from "./animations/MouseFollower";
 import ScrollProgress from "./animations/ScrollProgress";
 import FloatingShapes from "./animations/FloatingShapes";
+import ScrollIndicator from "./animations/ScrollIndicator";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -41,9 +42,7 @@ const Home: React.FC = () => {
       // Enregistrer les plugins GSAP
       if (typeof gsap !== 'undefined' && gsap.registerPlugin) {
         gsap.registerPlugin(ScrollTrigger);
-        console.log('GSAP et ScrollTrigger enregistrés avec succès');
       } else {
-        console.warn('GSAP ou ScrollTrigger non disponible');
         return; // Ne pas continuer si GSAP n'est pas disponible
       }
       
@@ -52,7 +51,6 @@ const Home: React.FC = () => {
         try {
           // Initialiser des animations très basiques
           const sections = document.querySelectorAll("section");
-          console.log('Sections trouvées pour animation:', sections.length);
           
           sections.forEach((section) => {
             gsap.set(section, { opacity: 0, y: 20 });
@@ -74,7 +72,6 @@ const Home: React.FC = () => {
           
           // Animation simplifiée pour les éléments marqués
           const elementsToAnimate = document.querySelectorAll(".animate-on-scroll, .animate-on-scroll-important");
-          console.log('Éléments à animer trouvés:', elementsToAnimate.length);
           
           elementsToAnimate.forEach((element) => {
             gsap.set(element, { opacity: 0, y: 20 });
@@ -138,16 +135,17 @@ const Home: React.FC = () => {
 
   return (
     <div className="bg-black min-h-screen overflow-x-hidden">
-      <MouseFollower />
+      {!isMobile && <MouseFollower />}
       <ScrollProgress />
-      <FloatingShapes />
+      <ScrollIndicator />
+      {!isMobile && <FloatingShapes />}
       <Navbar onCtaClick={handleCtaClick} />
       <main>
-        <HeroSection onCtaClick={handleCtaClick} />
-        <ServicesSection />
-        <ProcessSection />
-        <AboutSection />
-        <ContactSection />
+        <HeroSection id="hero" onCtaClick={handleCtaClick} />
+        <ServicesSection id="services" />
+        <ProcessSection id="process" />
+        <AboutSection id="about" />
+        <ContactSection id="contact" />
       </main>
       <Footer />
     </div>
