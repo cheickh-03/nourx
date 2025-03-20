@@ -10,7 +10,6 @@ import Footer from "./layout/Footer";
 import MouseFollower from "./animations/MouseFollower";
 import ScrollProgress from "./animations/ScrollProgress";
 import FloatingShapes from "./animations/FloatingShapes";
-import BackgroundGradient from "./animations/BackgroundGradient";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -19,73 +18,109 @@ const Home: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // Détection directe du mobile pour éviter les problèmes avec le hook
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
     
     checkMobile();
-    const debouncedResize = debounce(checkMobile, 250);
-    window.addEventListener('resize', debouncedResize);
+    window.addEventListener('resize', checkMobile);
     
-    return () => window.removeEventListener('resize', debouncedResize);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Debounce helper
-  function debounce(fn: Function, ms: number) {
-    let timer: NodeJS.Timeout;
-    return (...args: any[]) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), ms);
-    };
-  }
-
   useEffect(() => {
-    if (!isInitialized) {
-      try {
+    // N'initialiser qu'une seule fois
+    if (isInitialized) return;
+    
+    // Marquer comme initialisé immédiatement
+    setIsInitialized(true);
+    
+    try {
+      // Enregistrer les plugins GSAP
+      if (typeof gsap !== 'undefined' && gsap.registerPlugin) {
         gsap.registerPlugin(ScrollTrigger);
-        
-        const initAnimations = () => {
-          const sections = document.querySelectorAll('.animate-on-scroll');
+        console.log('GSAP et ScrollTrigger enregistrés avec succès');
+      } else {
+        console.warn('GSAP ou ScrollTrigger non disponible');
+        return; // Ne pas continuer si GSAP n'est pas disponible
+      }
+      
+      // Utiliser un délai pour s'assurer que le DOM est chargé
+      const timer = setTimeout(() => {
+        try {
+          // Initialiser des animations très basiques
+          const sections = document.querySelectorAll("section");
+          console.log('Sections trouvées pour animation:', sections.length);
           
           sections.forEach((section) => {
-            gsap.fromTo(
-              section,
-              {
-                opacity: 0,
-                y: 20,
+            gsap.set(section, { opacity: 0, y: 20 });
+            
+            ScrollTrigger.create({
+              trigger: section,
+              start: "top 85%",
+              onEnter: () => {
+                gsap.to(section, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.6,
+                  ease: "power2.out",
+                });
               },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 0.5,
-                scrollTrigger: {
-                  trigger: section,
-                  start: 'top 85%',
-                  toggleActions: 'play none none reverse',
-                },
-              }
-            );
+              once: true
+            });
           });
-        };
-
-        // Délai réduit pour l'initialisation
-        const timer = setTimeout(initAnimations, 500);
-        
-        setIsInitialized(true);
-        return () => clearTimeout(timer);
-      } catch (error) {
-        console.error('Error initializing animations:', error);
-        setIsInitialized(true);
-      }
+          
+          // Animation simplifiée pour les éléments marqués
+          const elementsToAnimate = document.querySelectorAll(".animate-on-scroll, .animate-on-scroll-important");
+          console.log('Éléments à animer trouvés:', elementsToAnimate.length);
+          
+          elementsToAnimate.forEach((element) => {
+            gsap.set(element, { opacity: 0, y: 20 });
+            
+            ScrollTrigger.create({
+              trigger: element,
+              start: "top 85%",
+              onEnter: () => {
+                gsap.to(element, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.6,
+                  ease: "power2.out",
+                });
+              },
+              once: true
+            });
+          });
+        } catch (error) {
+          console.error("Erreur lors de l'animation:", error);
+        }
+      }, 300); // Délai uniforme pour tous les appareils
+      
+      return () => clearTimeout(timer);
+    } catch (error) {
+      console.error("Erreur lors de l'initialisation de GSAP:", error);
     }
   }, [isInitialized]);
 
+  // Nettoyer les animations lors du démontage
+  useEffect(() => {
+    return () => {
+      try {
+        if (typeof ScrollTrigger !== 'undefined' && ScrollTrigger.getAll) {
+          ScrollTrigger.getAll().forEach((trigger) => {
+            if (trigger && trigger.kill) trigger.kill();
+          });
+        }
+      } catch (error) {
+        console.error("Erreur lors du nettoyage des animations:", error);
+      }
+    };
+  }, []);
+
   const handleCtaClick = () => {
-    const contactSection = document.getElementById('contact');
-    if (contactSection) {
-      contactSection.scrollIntoView({ behavior: 'smooth' });
-    }
+    navigate("/projet");
   };
 
   console.log('Home - isMobile:', isMobile);
@@ -102,13 +137,12 @@ const Home: React.FC = () => {
   console.log('Rendu de Footer');
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      <BackgroundGradient />
-      {!isMobile && <MouseFollower />}
+    <div className="bg-black min-h-screen overflow-x-hidden">
+      <MouseFollower />
       <ScrollProgress />
-      {!isMobile && <FloatingShapes />}
+      <FloatingShapes />
       <Navbar onCtaClick={handleCtaClick} />
-      <main className="relative">
+      <main>
         <HeroSection onCtaClick={handleCtaClick} />
         <ServicesSection />
         <ProcessSection />
