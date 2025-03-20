@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X, ChevronDown } from "lucide-react";
+import ThemeSwitcher from "../ui/theme-switcher";
 
 interface NavbarProps {
   transparent?: boolean;
@@ -47,81 +48,121 @@ const Navbar = ({
 
   return (
     <nav className={navbarClasses}>
-      <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-        {/* Logo */}
-        <div className="flex items-center">
-          <a href="#" className="text-xl sm:text-2xl font-bold text-blue-500">
-            NourX
-          </a>
+      <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="text-xl font-bold text-white">
+          <span className="text-blue-400">Nour</span>X
         </div>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          <ul className="flex space-x-6">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="text-gray-300 hover:text-blue-500 transition-colors duration-300 text-sm font-medium"
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-          <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-            onClick={onCtaClick}
+        {/* Menu Desktop */}
+        <div className="hidden md:flex space-x-8 items-center">
+          <a
+            href="#services"
+            className="text-gray-300 hover:text-white transition duration-300"
           >
-            Démarrer un Projet
+            Services
+          </a>
+          <a
+            href="#process"
+            className="text-gray-300 hover:text-white transition duration-300"
+          >
+            Processus
+          </a>
+          <a
+            href="#about"
+            className="text-gray-300 hover:text-white transition duration-300"
+          >
+            À propos
+          </a>
+          <a
+            href="#contact"
+            className="text-gray-300 hover:text-white transition duration-300"
+          >
+            Contact
+          </a>
+          
+          {/* Ajout du sélecteur de thème */}
+          <ThemeSwitcher />
+          
+          <Button
+            onClick={onCtaClick}
+            variant="outline"
+            className="ml-4 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white"
+          >
+            Démarrer un projet
           </Button>
         </div>
 
-        {/* Mobile Navigation Toggle */}
-        <div className="md:hidden">
+        {/* Menu Mobile */}
+        <div className="md:hidden flex items-center">
+          <ThemeSwitcher />
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
-            className="text-gray-300 hover:text-blue-500"
+            className="ml-4 text-white"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Navigation Menu */}
+      {/* Mobile Menu Drawer */}
       <div
-        className={cn(
-          "md:hidden bg-black/95 overflow-hidden transition-all duration-300",
-          isOpen ? "max-h-[400px] py-4" : "max-h-0",
-        )}
+        className={`fixed inset-0 z-50 transform ${
+          isOpen ? "translate-x-0" : "translate-x-full"
+        } transition-transform duration-300 ease-in-out md:hidden`}
       >
-        <div className="container mx-auto px-4">
-          <ul className="flex flex-col space-y-4">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <a
-                  href={item.href}
-                  className="text-gray-300 hover:text-blue-500 transition-colors duration-300 block py-2 text-lg font-medium"
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </a>
-              </li>
-            ))}
-            <li className="pt-2">
-              <Button
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-md"
-                onClick={() => {
-                  setIsOpen(false);
-                  onCtaClick();
-                }}
-              >
-                Démarrer un Projet
-              </Button>
-            </li>
-          </ul>
+        <div className="fixed inset-0 bg-black opacity-50"></div>
+        <div className="fixed right-0 inset-y-0 bg-black w-4/5 h-full shadow-xl p-6 flex flex-col">
+          <div className="flex justify-end">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen(false)}
+              className="text-white"
+            >
+              <X size={24} />
+            </Button>
+          </div>
+          <div className="flex flex-col space-y-6 mt-12">
+            <a
+              href="#services"
+              className="text-white text-xl hover:text-blue-400 transition duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              Services
+            </a>
+            <a
+              href="#process"
+              className="text-white text-xl hover:text-blue-400 transition duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              Processus
+            </a>
+            <a
+              href="#about"
+              className="text-white text-xl hover:text-blue-400 transition duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              À propos
+            </a>
+            <a
+              href="#contact"
+              className="text-white text-xl hover:text-blue-400 transition duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              Contact
+            </a>
+            <Button
+              onClick={() => {
+                onCtaClick();
+                setIsOpen(false);
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Démarrer un projet
+            </Button>
+          </div>
         </div>
       </div>
     </nav>

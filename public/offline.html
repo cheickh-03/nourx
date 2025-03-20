@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NourX - Hors-ligne</title>
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    
+    .container {
+      max-width: 600px;
+      padding: 2rem;
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+    
+    h1 {
+      color: #4dabf7;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    
+    p {
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      color: #e0e0e0;
+    }
+    
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #4dabf7;
+    }
+    
+    .button {
+      display: inline-block;
+      background-color: #4dabf7;
+      color: #000000;
+      padding: 0.8rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+      cursor: pointer;
+    }
+    
+    .button:hover {
+      background-color: #2196f3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📶</div>
+    <h1>Vous êtes hors-ligne</h1>
+    <p>Il semble que vous n'ayez pas de connexion internet. Certaines fonctionnalités peuvent être limitées jusqu'à ce que vous soyez à nouveau connecté.</p>
+    <p>Nous avons mis en cache certaines parties du site pour que vous puissiez continuer à explorer.</p>
+    <button class="button" onclick="window.location.reload()">Réessayer</button>
+  </div>
+  
+  <script>
+    // Vérifier périodiquement si la connexion est rétablie
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html> 
